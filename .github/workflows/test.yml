@@ -55,4 +55,4 @@ jobs:
         oras version
         echo ---
         read -ra ORAS_VERSION_INSTALLED <<<$(oras version)
-        [ "${ORAS_VERSION_INSTALLED[1]}" == "ORAS_VERSION_EXPECTED" ]
+        [ "${ORAS_VERSION_INSTALLED[1]}" == "$ORAS_VERSION_EXPECTED" ]

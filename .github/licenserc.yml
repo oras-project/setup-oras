@@ -29,7 +29,9 @@ header:
       limitations under the License.
 
   paths-ignore:
+    - '**/*.json'
     - '**/*.md'
+    - 'dist/**'
     - 'LICENSE'
 
   comment: on-failure

@@ -3,6 +3,9 @@
   "version": "0.1.0",
   "description": "Set up your GitHub Actions workflow with a specific version of ORAS",
   "main": "index.js",
+  "scripts": {
+    "build": "ncc build index.js -o dist --source-map --minify --license licenses.txt"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/oras-project/setup-oras.git"

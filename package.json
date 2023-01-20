@@ -1,0 +1,24 @@
+{
+  "name": "setup-oras",
+  "version": "0.1.0",
+  "description": "Set up your GitHub Actions workflow with a specific version of ORAS",
+  "main": "index.js",
+  "scripts": {
+    "build": "ncc build index.js -o dist --source-map --minify --license licenses.txt"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/oras-project/setup-oras.git"
+  },
+  "keywords": [],
+  "author": "ORAS",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/oras-project/setup-oras/issues"
+  },
+  "homepage": "https://github.com/oras-project/setup-oras#readme",
+  "dependencies": {
+    "@actions/core": "^1.10.0",
+    "@actions/tool-cache": "^2.0.1"
+  }
+}

@@ -4,9 +4,9 @@
 
 Setup [ORAS CLI](https://github.com/oras-project/oras) on GitHub Actions runners.
 
-## Usage
+## Quick Start
 
-Setup the `oras` CLI:
+Setup the `oras` CLI of the default version:
 
 ```yaml
 steps:
@@ -14,7 +14,12 @@ steps:
   - run: oras version
 ```
 
-Install a specific version of the `oras` CLI:
+## Advanced Usage
+
+Install a specific version of the `oras` CLI by specifying the input `version` without the prefix `v`.
+Supported versions can be found at [`oras` releases](https://github.com/oras-project/oras/releases).
+
+For example, install `oras` version `v0.16.0`.
 
 ```yaml
 steps:
@@ -32,4 +37,3 @@ the project website: [oras.land/cli](https://oras.land/cli/)
 ## Code of Conduct
 
 This project has adopted the [CNCF Code of Conduct](https://github.com/cncf/foundation/blob/master/code-of-conduct.md). See [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md) for further details.
-

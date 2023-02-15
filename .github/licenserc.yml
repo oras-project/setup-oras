@@ -32,6 +32,7 @@ header:
     - '**/*.json'
     - '**/*.md'
     - 'dist/**'
+    - 'CODEOWNERS'
     - 'LICENSE'
 
   comment: on-failure

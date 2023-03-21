@@ -19,13 +19,13 @@ steps:
 Install a specific version of the `oras` CLI by specifying the input `version` without the prefix `v`.
 Supported versions can be found at [`oras` releases](https://github.com/oras-project/oras/releases).
 
-For example, install `oras` version `v0.16.0`.
+For example, install `oras` version `v1.0.0`.
 
 ```yaml
 steps:
   - uses: oras-project/setup-oras@main
     with:
-      version: 0.16.0
+      version: 1.0.0
   - run: oras version
 ```
 

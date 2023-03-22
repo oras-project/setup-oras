@@ -10,7 +10,7 @@ Setup the `oras` CLI of the default version:
 
 ```yaml
 steps:
-  - uses: oras-project/setup-oras@main
+  - uses: oras-project/setup-oras@v1
   - run: oras version
 ```
 
@@ -23,7 +23,7 @@ For example, install `oras` version `v1.0.0`.
 
 ```yaml
 steps:
-  - uses: oras-project/setup-oras@main
+  - uses: oras-project/setup-oras@v1
     with:
       version: 1.0.0
   - run: oras version

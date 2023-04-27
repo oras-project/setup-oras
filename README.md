@@ -1,6 +1,8 @@
 # setup-oras
 
-![ORAS](https://github.com/oras-project/oras-www/raw/main/docs/assets/images/oras.png)
+<p align="left">
+<a href="https://oras.land/"><img src="https://oras.land/img/oras.svg" alt="banner" width="100px"></a>
+</p>
 
 Setup [ORAS CLI](https://github.com/oras-project/oras) on GitHub Actions runners.
 

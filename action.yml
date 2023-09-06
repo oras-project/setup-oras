@@ -20,4 +20,4 @@ inputs:
     default: 1.1.0
 runs:
   using: node16
-  main: dist/setup.js
+  main: dist/index.js

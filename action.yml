@@ -13,6 +13,9 @@
 
 name: setup-oras
 description: Setup ORAS CLI on GitHub Actions runners
+branding:
+  icon: box
+  color: blue
 inputs:
   version:
     description: Version of ORAS CLI to install

@@ -1,6 +1,8 @@
 # setup-oras
 
-![ORAS](https://github.com/oras-project/oras-www/raw/main/docs/assets/images/oras.png)
+<p align="left">
+<a href="https://oras.land/"><img src="https://oras.land/img/oras.svg" alt="banner" width="100px"></a>
+</p>
 
 Setup [ORAS CLI](https://github.com/oras-project/oras) on GitHub Actions runners.
 
@@ -10,7 +12,7 @@ Setup the `oras` CLI of the default version:
 
 ```yaml
 steps:
-  - uses: oras-project/setup-oras@main
+  - uses: oras-project/setup-oras@v1
   - run: oras version
 ```
 
@@ -23,7 +25,7 @@ For example, install `oras` version `v1.0.0`.
 
 ```yaml
 steps:
-  - uses: oras-project/setup-oras@main
+  - uses: oras-project/setup-oras@v1
     with:
       version: 1.0.0
   - run: oras version
@@ -32,7 +34,7 @@ steps:
 ## Docs
 
 Documentation for the ORAS CLI is located on
-the project website: [oras.land/cli](https://oras.land/cli/)
+the [project website](https://oras.land/docs/category/cli).
 
 ## Code of Conduct
 

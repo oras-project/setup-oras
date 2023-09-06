@@ -49,7 +49,7 @@ const core = __importStar(require("@actions/core"));
 const tc = __importStar(require("@actions/tool-cache"));
 const release_1 = require("./lib/release");
 const checksum_1 = require("./lib/checksum");
-// run sets up the ORAS CLI
+// setup sets up the ORAS CLI
 function setup() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
@@ -83,5 +83,7 @@ function setup() {
     });
 }
 exports.setup = setup;
-setup();
+if (require.main === module) {
+    setup();
+}
 //# sourceMappingURL=setup.js.map

@@ -16,7 +16,7 @@ import * as tc from '@actions/tool-cache';
 import { getReleaseInfo } from './lib/release';
 import { hash } from './lib/checksum';
 
-// run sets up the ORAS CLI
+// setup sets up the ORAS CLI
 export async function setup(): Promise<void> {
   try {
     // inputs from user
@@ -49,4 +49,6 @@ export async function setup(): Promise<void> {
   }
 }
 
-setup();
+if (require.main === module) {
+  setup();
+}

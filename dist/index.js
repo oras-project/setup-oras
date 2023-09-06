@@ -1,265 +1,6 @@
 /******/ (() => { // webpackBootstrap
 /******/ 	var __webpack_modules__ = ({
 
-/***/ 2471:
-/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
-
-"use strict";
-
-// Copyright The ORAS Authors.
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-// http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-    __setModuleDefault(result, mod);
-    return result;
-};
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.hash = void 0;
-const crypto = __importStar(__nccwpck_require__(6113));
-const fs = __importStar(__nccwpck_require__(7147));
-// hash computes SH256 of file at path.
-function hash(path) {
-    return new Promise((resolve, reject) => {
-        const hash = crypto.createHash('sha256');
-        const stream = fs.createReadStream(path);
-        stream.on('error', err => reject(err));
-        stream.on('data', chunk => hash.update(chunk));
-        stream.on('end', () => resolve(hash.digest('hex')));
-    });
-}
-exports.hash = hash;
-//# sourceMappingURL=checksum.js.map
-
-/***/ }),
-
-/***/ 8745:
-/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
-
-"use strict";
-
-// Copyright The ORAS Authors.
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-// http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-    __setModuleDefault(result, mod);
-    return result;
-};
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.getBinaryExtension = exports.mapArch = exports.mapPlatform = exports.getReleaseInfo = void 0;
-const os = __importStar(__nccwpck_require__(2037));
-const releases_json_1 = __importDefault(__nccwpck_require__(1561));
-// Get release info of a certain verion of ORAS CLI
-function getReleaseInfo(version) {
-    const releases = releases_json_1.default;
-    if (!(version in releases)) {
-        console.log(`official ORAS CLI releases does not contain version ${version}`);
-        throw new Error(`official ORAS CLI releases does not contain version ${version}`);
-    }
-    const platform = mapPlatform();
-    const arch = mapArch();
-    const download = releases[version][platform][arch];
-    if (!download) {
-        throw new Error(`official ORAS CLI releases does not contain version ${version}, platform ${platform}, arch ${arch} is not supported`);
-    }
-    return download;
-}
-exports.getReleaseInfo = getReleaseInfo;
-// getPlatform maps os.platform() to ORAS supported platforms.
-function mapPlatform() {
-    const platform = os.platform();
-    switch (platform) {
-        case 'linux':
-            return 'linux';
-        case 'darwin':
-            return 'darwin';
-        case 'win32':
-            return 'windows';
-        default:
-            throw new Error(`unsupported platform: ${platform}`);
-    }
-}
-exports.mapPlatform = mapPlatform;
-// mapArch maps os.arch() to ORAS supported architectures.
-function mapArch() {
-    const architecture = os.arch();
-    switch (architecture) {
-        case 'x64':
-            return 'amd64';
-        case 'arm64':
-            return 'arm64';
-        case 'arm64':
-            return 'arm64';
-        case 's390':
-            return 's390x';
-        case 'arm':
-            return 'armv7';
-        default:
-            throw new Error(`unsupported architecture: ${architecture}`);
-    }
-}
-exports.mapArch = mapArch;
-function getBinaryExtension() {
-    const platform = mapPlatform();
-    return platform === 'windows' ? '.exe' : '';
-}
-exports.getBinaryExtension = getBinaryExtension;
-//# sourceMappingURL=release.js.map
-
-/***/ }),
-
-/***/ 1604:
-/***/ (function(module, __unused_webpack_exports, __nccwpck_require__) {
-
-"use strict";
-
-// Copyright The ORAS Authors.
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-// http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-    __setModuleDefault(result, mod);
-    return result;
-};
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
-const core = __importStar(__nccwpck_require__(2186));
-const tc = __importStar(__nccwpck_require__(7784));
-const release_1 = __nccwpck_require__(8745);
-const checksum_1 = __nccwpck_require__(2471);
-// setup sets up the ORAS CLI
-function setup() {
-    return __awaiter(this, void 0, void 0, function* () {
-        try {
-            // inputs from user
-            const version = core.getInput('version');
-            // download ORAS CLI and validate checksum
-            const info = (0, release_1.getReleaseInfo)(version);
-            const url = info.url;
-            console.log(`downloading ORAS CLI from ${url}`);
-            const pathToTarball = yield tc.downloadTool(url);
-            console.log("downloading ORAS CLI completed");
-            const checksum = yield (0, checksum_1.hash)(pathToTarball);
-            if (checksum !== info.checksum) {
-                throw new Error(`checksum of downloaded ORAS CLI ${checksum} does not match expected checksum ${info.checksum}`);
-            }
-            console.log("successfully verified downloaded release checksum");
-            // extract the tarball/zipball onto host runner
-            const extract = url.endsWith('.zip') ? tc.extractZip : tc.extractTar;
-            const pathToCLI = yield extract(pathToTarball);
-            // add `ORAS` to PATH
-            core.addPath(pathToCLI);
-        }
-        catch (e) {
-            if (e instanceof Error) {
-                core.setFailed(e);
-            }
-            else {
-                core.setFailed('unknown error during ORAS setup');
-            }
-        }
-    });
-}
-if (require.main === require.cache[eval('__filename')]) {
-    setup();
-}
-module.exports = setup;
-//# sourceMappingURL=setup.js.map
-
-/***/ }),
-
 /***/ 7351:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
@@ -6843,6 +6584,265 @@ exports["default"] = _default;
 
 /***/ }),
 
+/***/ 9845:
+/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
+
+"use strict";
+
+// Copyright The ORAS Authors.
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+// http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.hash = void 0;
+const crypto = __importStar(__nccwpck_require__(6113));
+const fs = __importStar(__nccwpck_require__(7147));
+// hash computes SH256 of file at path.
+function hash(path) {
+    return new Promise((resolve, reject) => {
+        const hash = crypto.createHash('sha256');
+        const stream = fs.createReadStream(path);
+        stream.on('error', err => reject(err));
+        stream.on('data', chunk => hash.update(chunk));
+        stream.on('end', () => resolve(hash.digest('hex')));
+    });
+}
+exports.hash = hash;
+
+
+/***/ }),
+
+/***/ 3995:
+/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
+
+"use strict";
+
+// Copyright The ORAS Authors.
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+// http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.getBinaryExtension = exports.mapArch = exports.mapPlatform = exports.getReleaseInfo = void 0;
+const os = __importStar(__nccwpck_require__(2037));
+const releases_json_1 = __importDefault(__nccwpck_require__(2387));
+// Get release info of a certain verion of ORAS CLI
+function getReleaseInfo(version) {
+    const releases = releases_json_1.default;
+    if (!(version in releases)) {
+        console.log(`official ORAS CLI releases does not contain version ${version}`);
+        throw new Error(`official ORAS CLI releases does not contain version ${version}`);
+    }
+    const platform = mapPlatform();
+    const arch = mapArch();
+    const download = releases[version][platform][arch];
+    if (!download) {
+        throw new Error(`official ORAS CLI releases does not contain version ${version}, platform ${platform}, arch ${arch} is not supported`);
+    }
+    return download;
+}
+exports.getReleaseInfo = getReleaseInfo;
+// getPlatform maps os.platform() to ORAS supported platforms.
+function mapPlatform() {
+    const platform = os.platform();
+    switch (platform) {
+        case 'linux':
+            return 'linux';
+        case 'darwin':
+            return 'darwin';
+        case 'win32':
+            return 'windows';
+        default:
+            throw new Error(`unsupported platform: ${platform}`);
+    }
+}
+exports.mapPlatform = mapPlatform;
+// mapArch maps os.arch() to ORAS supported architectures.
+function mapArch() {
+    const architecture = os.arch();
+    switch (architecture) {
+        case 'x64':
+            return 'amd64';
+        case 'arm64':
+            return 'arm64';
+        case 'arm64':
+            return 'arm64';
+        case 's390':
+            return 's390x';
+        case 'arm':
+            return 'armv7';
+        default:
+            throw new Error(`unsupported architecture: ${architecture}`);
+    }
+}
+exports.mapArch = mapArch;
+function getBinaryExtension() {
+    const platform = mapPlatform();
+    return platform === 'windows' ? '.exe' : '';
+}
+exports.getBinaryExtension = getBinaryExtension;
+
+
+/***/ }),
+
+/***/ 8429:
+/***/ (function(module, __unused_webpack_exports, __nccwpck_require__) {
+
+"use strict";
+
+// Copyright The ORAS Authors.
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+// http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+const core = __importStar(__nccwpck_require__(2186));
+const tc = __importStar(__nccwpck_require__(7784));
+const release_1 = __nccwpck_require__(3995);
+const checksum_1 = __nccwpck_require__(9845);
+// setup sets up the ORAS CLI
+function setup() {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            // inputs from user
+            const version = core.getInput('version');
+            // download ORAS CLI and validate checksum
+            const info = (0, release_1.getReleaseInfo)(version);
+            const url = info.url;
+            console.log(`downloading ORAS CLI from ${url}`);
+            const pathToTarball = yield tc.downloadTool(url);
+            console.log("downloading ORAS CLI completed");
+            const checksum = yield (0, checksum_1.hash)(pathToTarball);
+            if (checksum !== info.checksum) {
+                throw new Error(`checksum of downloaded ORAS CLI ${checksum} does not match expected checksum ${info.checksum}`);
+            }
+            console.log("successfully verified downloaded release checksum");
+            // extract the tarball/zipball onto host runner
+            const extract = url.endsWith('.zip') ? tc.extractZip : tc.extractTar;
+            const pathToCLI = yield extract(pathToTarball);
+            // add `ORAS` to PATH
+            core.addPath(pathToCLI);
+        }
+        catch (e) {
+            if (e instanceof Error) {
+                core.setFailed(e);
+            }
+            else {
+                core.setFailed('unknown error during ORAS setup');
+            }
+        }
+    });
+}
+if (require.main === require.cache[eval('__filename')]) {
+    setup();
+}
+module.exports = setup;
+
+
+/***/ }),
+
 /***/ 9491:
 /***/ ((module) => {
 
@@ -6963,11 +6963,11 @@ module.exports = require("util");
 
 /***/ }),
 
-/***/ 1561:
+/***/ 2387:
 /***/ ((module) => {
 
 "use strict";
-module.exports = JSON.parse('{"1.0.1":{"darwin":{"amd64":{"checksum":"34f11536dc191f9ad4288649f97ef69b478548f891c932c9732307f064ed3331","url":"https://github.com/oras-project/oras/releases/download/v1.0.1/oras_1.0.1_darwin_amd64.tar.gz"},"arm64":{"checksum":"faa0181799f0e0295d7df188441a1f8869da78a50da4cf7fb03cf35dc746b178","url":"https://github.com/oras-project/oras/releases/download/v1.0.1/oras_1.0.1_darwin_arm64.tar.gz"}},"linux":{"amd64":{"checksum":"6b51b87360d373dd3c19b91d2627d2efd320513380a878b6f06702f72fe8c5ab","url":"https://github.com/oras-project/oras/releases/download/v1.0.1/oras_1.0.1_linux_amd64.tar.gz"},"arm64":{"checksum":"ae1884ae17b7ae7ce694c63d51a52ab0dac1f2c0ca384163455c1e96c5663db0","url":"https://github.com/oras-project/oras/releases/download/v1.0.1/oras_1.0.1_linux_arm64.tar.gz"},"armv7":{"checksum":"f31bc8eab3ed2f368056df3eb5761f40d90dfbd8272bec58d83961f41ebbf3fb","url":"https://github.com/oras-project/oras/releases/download/v1.0.1/oras_1.0.1_linux_armv7.tar.gz"},"s390x":{"checksum":"2a63313a99dd45c448c022a303941e1f5b47b8fdf3493c593b026de384a284b6","url":"https://github.com/oras-project/oras/releases/download/v1.0.1/oras_1.0.1_linux_s390x.tar.gz"}},"windows":{"amd64":{"checksum":"0b9c50eda7aa384d435b31710264d08c77a5e83ee6560ee6e13ca46a6acec1ba","url":"https://github.com/oras-project/oras/releases/download/v1.0.1/oras_1.0.1_windows_amd64.zip"}}},"1.1.0":{"darwin":{"amd64":{"checksum":"f8ac5dea53dd9331cf080f1025f0612e7b07c5af864a4fd609f97d8946508e45","url":"https://github.com/oras-project/oras/releases/download/v1.0.1/oras_1.0.1_darwin_amd64.tar.gz"},"arm64":{"checksum":"d52d3140b0bb9f7d7e31dcbf2a513f971413769c11f7d7a5599e76cc98e45007","url":"https://github.com/oras-project/oras/releases/download/v1.0.1/oras_1.0.1_darwin_arm64.tar.gz"}},"linux":{"amd64":{"checksum":"e09e85323b24ccc8209a1506f142e3d481e6e809018537c6b3db979c891e6ad7","url":"https://github.com/oras-project/oras/releases/download/v1.0.1/oras_1.0.1_linux_amd64.tar.gz"},"arm64":{"checksum":"e450b081f67f6fda2f16b7046075c67c9a53f3fda92fd20ecc59873b10477ab4","url":"https://github.com/oras-project/oras/releases/download/v1.0.1/oras_1.0.1_linux_arm64.tar.gz"},"armv7":{"checksum":"def86e7f787f8deee50bb57d1c155201099f36aa0c6700d3b525e69ddf8ae49b","url":"https://github.com/oras-project/oras/releases/download/v1.0.1/oras_1.0.1_linux_armv7.tar.gz"},"s390x":{"checksum":"067600d61d5d7c23f7bd184cff168ad558d48bed99f6735615bce0e1068b1d77","url":"https://github.com/oras-project/oras/releases/download/v1.0.1/oras_1.0.1_linux_s390x.tar.gz"}},"windows":{"amd64":{"checksum":"2ac83631181d888445e50784a5f760f7f9d97fba3c089e79b68580c496fe68cf","url":"https://github.com/oras-project/oras/releases/download/v1.0.1/oras_1.0.1_windows_amd64.zip"}}}}');
+module.exports = JSON.parse('{"1.0.1":{"darwin":{"amd64":{"checksum":"34f11536dc191f9ad4288649f97ef69b478548f891c932c9732307f064ed3331","url":"https://github.com/oras-project/oras/releases/download/v1.0.1/oras_1.0.1_darwin_amd64.tar.gz"},"arm64":{"checksum":"faa0181799f0e0295d7df188441a1f8869da78a50da4cf7fb03cf35dc746b178","url":"https://github.com/oras-project/oras/releases/download/v1.0.1/oras_1.0.1_darwin_arm64.tar.gz"}},"linux":{"amd64":{"checksum":"6b51b87360d373dd3c19b91d2627d2efd320513380a878b6f06702f72fe8c5ab","url":"https://github.com/oras-project/oras/releases/download/v1.0.1/oras_1.0.1_linux_amd64.tar.gz"},"arm64":{"checksum":"ae1884ae17b7ae7ce694c63d51a52ab0dac1f2c0ca384163455c1e96c5663db0","url":"https://github.com/oras-project/oras/releases/download/v1.0.1/oras_1.0.1_linux_arm64.tar.gz"},"armv7":{"checksum":"f31bc8eab3ed2f368056df3eb5761f40d90dfbd8272bec58d83961f41ebbf3fb","url":"https://github.com/oras-project/oras/releases/download/v1.0.1/oras_1.0.1_linux_armv7.tar.gz"},"s390x":{"checksum":"2a63313a99dd45c448c022a303941e1f5b47b8fdf3493c593b026de384a284b6","url":"https://github.com/oras-project/oras/releases/download/v1.0.1/oras_1.0.1_linux_s390x.tar.gz"}},"windows":{"amd64":{"checksum":"0b9c50eda7aa384d435b31710264d08c77a5e83ee6560ee6e13ca46a6acec1ba","url":"https://github.com/oras-project/oras/releases/download/v1.0.1/oras_1.0.1_windows_amd64.zip"}}},"1.1.0":{"darwin":{"amd64":{"checksum":"f8ac5dea53dd9331cf080f1025f0612e7b07c5af864a4fd609f97d8946508e45","url":"https://github.com/oras-project/oras/releases/download/v1.1.0/oras_1.1.0_darwin_amd64.tar.gz"},"arm64":{"checksum":"d52d3140b0bb9f7d7e31dcbf2a513f971413769c11f7d7a5599e76cc98e45007","url":"https://github.com/oras-project/oras/releases/download/v1.1.0/oras_1.1.0_darwin_arm64.tar.gz"}},"linux":{"amd64":{"checksum":"e09e85323b24ccc8209a1506f142e3d481e6e809018537c6b3db979c891e6ad7","url":"https://github.com/oras-project/oras/releases/download/v1.1.0/oras_1.1.0_linux_amd64.tar.gz"},"arm64":{"checksum":"e450b081f67f6fda2f16b7046075c67c9a53f3fda92fd20ecc59873b10477ab4","url":"https://github.com/oras-project/oras/releases/download/v1.1.0/oras_1.1.0_linux_arm64.tar.gz"},"armv7":{"checksum":"def86e7f787f8deee50bb57d1c155201099f36aa0c6700d3b525e69ddf8ae49b","url":"https://github.com/oras-project/oras/releases/download/v1.1.0/oras_1.1.0_linux_armv7.tar.gz"},"s390x":{"checksum":"067600d61d5d7c23f7bd184cff168ad558d48bed99f6735615bce0e1068b1d77","url":"https://github.com/oras-project/oras/releases/download/v1.1.0/oras_1.1.0_linux_s390x.tar.gz"}},"windows":{"amd64":{"checksum":"2ac83631181d888445e50784a5f760f7f9d97fba3c089e79b68580c496fe68cf","url":"https://github.com/oras-project/oras/releases/download/v1.1.0/oras_1.1.0_windows_amd64.zip"}}}}');
 
 /***/ })
 
@@ -7013,7 +7013,7 @@ module.exports = JSON.parse('{"1.0.1":{"darwin":{"amd64":{"checksum":"34f11536dc
 /******/ 	// startup
 /******/ 	// Load entry module and return exports
 /******/ 	// This entry module is referenced by other modules so it can't be inlined
-/******/ 	var __webpack_exports__ = __nccwpck_require__(1604);
+/******/ 	var __webpack_exports__ = __nccwpck_require__(8429);
 /******/ 	module.exports = __webpack_exports__;
 /******/ 	
 /******/ })()

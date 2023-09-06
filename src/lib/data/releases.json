@@ -1,0 +1,38 @@
+{
+    "1.0.1": {
+        "darwin": {
+            "amd64": {
+                "checksum": "34f11536dc191f9ad4288649f97ef69b478548f891c932c9732307f064ed3331",
+                "url": "https://github.com/oras-project/oras/releases/download/v1.0.1/oras_1.0.1_darwin_amd64.tar.gz"
+            },
+            "arm64": {
+                "checksum": "faa0181799f0e0295d7df188441a1f8869da78a50da4cf7fb03cf35dc746b178",
+                "url": "https://github.com/oras-project/oras/releases/download/v1.0.1/oras_1.0.1_darwin_arm64.tar.gz"
+            }
+        },
+        "linux": {
+            "amd64": {
+                "checksum": "6b51b87360d373dd3c19b91d2627d2efd320513380a878b6f06702f72fe8c5ab",
+                "url": "https://github.com/oras-project/oras/releases/download/v1.0.1/oras_1.0.1_linux_amd64.tar.gz"
+            },
+            "arm64": {
+                "checksum": "ae1884ae17b7ae7ce694c63d51a52ab0dac1f2c0ca384163455c1e96c5663db0",
+                "url": "https://github.com/oras-project/oras/releases/download/v1.0.1/oras_1.0.1_linux_arm64.tar.gz"
+            },
+            "armv7": {
+                "checksum": "f31bc8eab3ed2f368056df3eb5761f40d90dfbd8272bec58d83961f41ebbf3fb",
+                "url": "https://github.com/oras-project/oras/releases/download/v1.0.1/oras_1.0.1_linux_armv7.tar.gz"
+            },
+            "s390x": {
+                "checksum": "2a63313a99dd45c448c022a303941e1f5b47b8fdf3493c593b026de384a284b6",
+                "url": "https://github.com/oras-project/oras/releases/download/v1.0.1/oras_1.0.1_linux_s390x.tar.gz"
+            }
+        },
+        "windows": {
+            "amd64": {
+                "checksum": "0b9c50eda7aa384d435b31710264d08c77a5e83ee6560ee6e13ca46a6acec1ba",
+                "url": "https://github.com/oras-project/oras/releases/download/v1.0.1/oras_1.0.1_windows_amd64.zip"
+            }
+        }
+    }
+}

@@ -36,7 +36,8 @@ jobs:
         os: [macos-latest, windows-latest, ubuntu-latest]
         version:
           - 0.15.1
-          - 1.0.0
+          - 1.0.1
+          - 1.1.0
       fail-fast: true
     steps:
     - name: Checkout

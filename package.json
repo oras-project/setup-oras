@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "description": "Set up your GitHub Actions workflow with a specific version of ORAS",
   "scripts": {
-    "build": "tsc --build && ncc build dist/index.js"
+    "build": "tsc --build && ncc build dist/setup.js"
   },
   "repository": {
     "type": "git",

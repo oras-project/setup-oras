@@ -84,4 +84,4 @@ if (require.main === module) {
     setup();
 }
 module.exports = setup;
-//# sourceMappingURL=index.js.map
+//# sourceMappingURL=setup.js.map

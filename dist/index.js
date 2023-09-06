@@ -43,8 +43,6 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.setup = void 0;
 const core = __importStar(require("@actions/core"));
 const tc = __importStar(require("@actions/tool-cache"));
 const release_1 = require("./lib/release");
@@ -82,8 +80,8 @@ function setup() {
         }
     });
 }
-exports.setup = setup;
 if (require.main === module) {
     setup();
 }
-//# sourceMappingURL=setup.js.map
+module.exports = setup;
+//# sourceMappingURL=index.js.map

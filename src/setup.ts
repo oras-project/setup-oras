@@ -17,7 +17,7 @@ import { getReleaseInfo } from './lib/release';
 import { hash } from './lib/checksum';
 
 // setup sets up the ORAS CLI
-export async function setup(): Promise<void> {
+async function setup(): Promise<void> {
   try {
     // inputs from user
     const version: string = core.getInput('version');
@@ -48,6 +48,8 @@ export async function setup(): Promise<void> {
     }
   }
 }
+
+export = setup;
 
 if (require.main === module) {
   setup();

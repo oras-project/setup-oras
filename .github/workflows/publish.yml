@@ -17,9 +17,6 @@ name: Publish
 on:
   release:
     types: [published, edited]
-  push:
-    branches:
-      - build/auto-publish
 
 jobs:
   publish:

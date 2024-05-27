@@ -27,7 +27,15 @@ interface releases {
 }
 
 // Get release info of a certain verion of ORAS CLI
-export function getReleaseInfo(version: string) {
+export function getReleaseInfo(version: string, url: string, checksum: string) {
+    // customized ORAS CLI
+    if (url && checksum) {
+        return {
+            checksum: checksum, 
+            url: url
+        } 
+    }
+    // official
     const releases = releaseJson as releases;
     if (!(version in releases)) {
         console.log(`official ORAS CLI releases does not contain version ${version}`)

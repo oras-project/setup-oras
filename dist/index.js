@@ -6691,7 +6691,15 @@ exports.getBinaryExtension = exports.mapArch = exports.mapPlatform = exports.get
 const os = __importStar(__nccwpck_require__(2037));
 const releases_json_1 = __importDefault(__nccwpck_require__(2387));
 // Get release info of a certain verion of ORAS CLI
-function getReleaseInfo(version) {
+function getReleaseInfo(version, url, checksum) {
+    // customized ORAS CLI
+    if (url && checksum) {
+        return {
+            checksum: checksum,
+            url: url
+        };
+    }
+    // official
     const releases = releases_json_1.default;
     if (!(version in releases)) {
         console.log(`official ORAS CLI releases does not contain version ${version}`);
@@ -6808,19 +6816,25 @@ function setup() {
         try {
             // inputs from user
             const version = core.getInput('version');
+            const url = core.getInput('url');
+            const checksum = core.getInput('checksum').toLowerCase();
+            // sanity check
+            if (url && !checksum) {
+                throw new Error("user provided url of customized ORAS CLI release but without SHA256 checksum");
+            }
             // download ORAS CLI and validate checksum
-            const info = (0, release_1.getReleaseInfo)(version);
-            const url = info.url;
-            console.log(`downloading ORAS CLI from ${url}`);
-            const pathToTarball = yield tc.downloadTool(url);
+            const info = (0, release_1.getReleaseInfo)(version, url, checksum);
+            const download_url = info.url;
+            console.log(`downloading ORAS CLI from ${download_url}`);
+            const pathToTarball = yield tc.downloadTool(download_url);
             console.log("downloading ORAS CLI completed");
-            const checksum = yield (0, checksum_1.hash)(pathToTarball);
-            if (checksum !== info.checksum) {
-                throw new Error(`checksum of downloaded ORAS CLI ${checksum} does not match expected checksum ${info.checksum}`);
+            const actual_checksum = yield (0, checksum_1.hash)(pathToTarball);
+            if (actual_checksum !== info.checksum) {
+                throw new Error(`checksum of downloaded ORAS CLI ${actual_checksum} does not match expected checksum ${info.checksum}`);
             }
             console.log("successfully verified downloaded release checksum");
             // extract the tarball/zipball onto host runner
-            const extract = url.endsWith('.zip') ? tc.extractZip : tc.extractTar;
+            const extract = download_url.endsWith('.zip') ? tc.extractZip : tc.extractTar;
             const pathToCLI = yield extract(pathToTarball);
             // add `ORAS` to PATH
             core.addPath(pathToCLI);

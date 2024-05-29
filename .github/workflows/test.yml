@@ -73,37 +73,37 @@ jobs:
     - name: Setup ORAS using URL without checksum
       id: no-checksum
       continue-on-error: true
-        uses: ./
-        with:
-          url: https://github.com/oras-project/oras/releases/download/v1.0.0/oras_1.0.0_linux_amd64.tar.gz
-      - name: 'Should Fail: Setup ORAS using URL without checksum'
-        if: steps.no-checksum.outcome != 'failure'
-        run: |
-            echo "Setup ORAS using URL without checksum should fail, but succeeded."
-            exit 1
+      uses: ./
+      with:
+        url: https://github.com/oras-project/oras/releases/download/v1.0.0/oras_1.0.0_linux_amd64.tar.gz
+    - name: 'Should Fail: Setup ORAS using URL without checksum'
+      if: steps.no-checksum.outcome != 'failure'
+      run: |
+        echo "Setup ORAS using URL without checksum should fail, but succeeded."
+        exit 1
     
     - name: Setup ORAS using URL and invalid checksum
-        id: invalid-checksum
-        continue-on-error: true
-        uses: ./
-        with:
-          url: https://github.com/oras-project/oras/releases/download/v1.0.0/oras_1.0.0_linux_amd64.tar.gz
-          checksum: abcedf
-      - name: 'Should Fail: Setup ORAS using URL and invalid checksum'
-        if: steps.invalid-checksum.outcome != 'failure'
-        run: |
-            echo "Setup ORAS using URL and invalid checksum should fail, but succeeded."
-            exit 1
+      id: invalid-checksum
+      continue-on-error: true
+      uses: ./
+      with:
+        url: https://github.com/oras-project/oras/releases/download/v1.0.0/oras_1.0.0_linux_amd64.tar.gz
+        checksum: abcedf
+    - name: 'Should Fail: Setup ORAS using URL and invalid checksum'
+      if: steps.invalid-checksum.outcome != 'failure'
+      run: |
+        echo "Setup ORAS using URL and invalid checksum should fail, but succeeded."
+        exit 1
     
-      - name: Setup ORAS using invalid URL
-        id: invalid-url
-        continue-on-error: true
-        uses: ./
-        with:
-          url: invalid-url
-          checksum: test
-      - name: 'Should Fail: Setup ORAS using invalid URL'
-        if: steps.invalid-url.outcome != 'failure'
-        run: |
-            echo "Setup ORAS using invalid URL should fail, but succeeded."
-            exit 1
+    - name: Setup ORAS using invalid URL
+      id: invalid-url
+      continue-on-error: true
+      uses: ./
+      with:
+        url: invalid-url
+        checksum: test
+    - name: 'Should Fail: Setup ORAS using invalid URL'
+      if: steps.invalid-url.outcome != 'failure'
+      run: |
+        echo "Setup ORAS using invalid URL should fail, but succeeded."
+        exit 1

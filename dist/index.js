@@ -6692,14 +6692,14 @@ const os = __importStar(__nccwpck_require__(2037));
 const releases_json_1 = __importDefault(__nccwpck_require__(2387));
 // Get release info of a certain verion of ORAS CLI
 function getReleaseInfo(version, url, checksum) {
-    // customized ORAS CLI
+    // if customized ORAS CLI link is provided
     if (url && checksum) {
         return {
             checksum: checksum,
             url: url
         };
     }
-    // official
+    // get the official release
     const releases = releases_json_1.default;
     if (!(version in releases)) {
         console.log(`official ORAS CLI releases does not contain version ${version}`);

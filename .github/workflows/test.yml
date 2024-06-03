@@ -63,11 +63,16 @@ jobs:
     steps:
     - name: Checkout
       uses: actions/checkout@v3
+    
+    - name: Create test variables
+      run:
+        URL=$(jq -r 'keys_unsorted[0] as $k | .[$k].linux.amd64.url' src/lib/data/releases.json)
+        CHECKSUM=$(jq -r 'keys_unsorted[0] as $k | .[$k].linux.amd64.checksum' src/lib/data/releases.json)
 
     - name: Setup ORAS using URL
       uses: ./
       with:
-        url: https://github.com/oras-project/oras/releases/download/v1.0.0/oras_1.0.0_linux_amd64.tar.gz
+        url: ${{ env.URL }}
         checksum: "8533c9ea1e5a0d5eb1dfc5094c0e8ef106d15462f8a119077548f88937ed2133"
 
     - name: Setup ORAS using URL without checksum
@@ -75,7 +80,7 @@ jobs:
       continue-on-error: true
       uses: ./
       with:
-        url: https://github.com/oras-project/oras/releases/download/v1.0.0/oras_1.0.0_linux_amd64.tar.gz
+        url: ${{ env.URL }}
     - name: 'Should Fail: Setup ORAS using URL without checksum'
       if: steps.no-checksum.outcome != 'failure'
       run: |
@@ -87,7 +92,7 @@ jobs:
       continue-on-error: true
       uses: ./
       with:
-        url: https://github.com/oras-project/oras/releases/download/v1.0.0/oras_1.0.0_linux_amd64.tar.gz
+        url: ${{ env.URL }}
         checksum: abcedf
     - name: 'Should Fail: Setup ORAS using URL and invalid checksum'
       if: steps.invalid-checksum.outcome != 'failure'

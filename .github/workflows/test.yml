@@ -23,6 +23,10 @@ on:
       - main
       - release-*
 
+env:
+  URL: $(jq -r 'keys_unsorted[0] as $k | .[$k].linux.amd64.url' src/lib/data/releases.json)
+  CHECKSUM: $(jq -r 'keys_unsorted[0] as $k | .[$k].linux.amd64.checksum' src/lib/data/releases.json)
+
 defaults:
   run:
     shell: bash
@@ -63,11 +67,6 @@ jobs:
     steps:
     - name: Checkout
       uses: actions/checkout@v3
-    
-    - name: Create test variables
-      run:
-        URL=$(jq -r 'keys_unsorted[0] as $k | .[$k].linux.amd64.url' src/lib/data/releases.json)
-        CHECKSUM=$(jq -r 'keys_unsorted[0] as $k | .[$k].linux.amd64.checksum' src/lib/data/releases.json)
 
     - name: Setup ORAS using URL
       uses: ./

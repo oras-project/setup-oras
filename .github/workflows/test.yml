@@ -67,6 +67,8 @@ jobs:
       output1: ${{ steps.step1.outputs.URL }}
       output2: ${{ steps.step2.outputs.CHECKSUM }}
     steps:
+      - id: checkout
+        uses: actions/checkout@v3
       - id: step1
         run: echo "URL=$(jq -r 'keys_unsorted[0] as $k | .[$k].linux.amd64.url' ./src/lib/data/releases.json)" >> "$GITHUB_OUTPUT"
       - id: debug0

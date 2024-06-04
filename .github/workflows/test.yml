@@ -23,10 +23,6 @@ on:
       - main
       - release-*
 
-# env:
-  # URL: $(jq -r 'keys_unsorted[0] as $k | .[$k].linux.amd64.url' src/lib/data/releases.json)
-  # CHECKSUM: $(jq -r 'keys_unsorted[0] as $k | .[$k].linux.amd64.checksum' src/lib/data/releases.json)
-
 defaults:
   run:
     shell: bash
@@ -64,23 +60,15 @@ jobs:
   create-test-variables:
     runs-on: ubuntu-latest
     outputs:
-      output1: ${{ steps.step1.outputs.URL }}
-      output2: ${{ steps.step2.outputs.CHECKSUM }}
+      url: ${{ steps.get-url.outputs.URL }}
+      checksum: ${{ steps.get-checksum.outputs.CHECKSUM }}
     steps:
       - id: checkout
         uses: actions/checkout@v3
-      - id: step1
-        run: echo "URL=$(jq -r 'keys_unsorted[0] as $k | .[$k].linux.amd64.url' ./src/lib/data/releases.json)" >> "$GITHUB_OUTPUT"
-      - id: debug0
-        run: ls
-      - id: debug00
-        run: echo $PWD
-      - id: debug1
-        run: echo $URL
-      - id: step2
-        run: echo "CHECKSUM=$(jq -r 'keys_unsorted[0] as $k | .[$k].linux.amd64.checksum' ./src/lib/data/releases.json)" >> "$GITHUB_OUTPUT"
-      - id: debug2
-        run: echo $CHECKSUM
+      - id: get-url
+        run: echo "URL=$(jq -r 'keys_unsorted[0] as $k | .[$k].linux.amd64.url' src/lib/data/releases.json)" >> "$GITHUB_OUTPUT"
+      - id: get-checksum
+        run: echo "CHECKSUM=$(jq -r 'keys_unsorted[0] as $k | .[$k].linux.amd64.checksum' src/lib/data/releases.json)" >> "$GITHUB_OUTPUT"
 
   test-custom-url:
     name: Test Setup using URL
@@ -93,15 +81,15 @@ jobs:
     - name: Setup ORAS using URL
       uses: ./
       with:
-        url: ${{ needs.create-test-variables.outputs.output1 }}
-        checksum: "8533c9ea1e5a0d5eb1dfc5094c0e8ef106d15462f8a119077548f88937ed2133"
+        url: ${{ needs.create-test-variables.outputs.url }}
+        checksum: ${{ needs.create-test-variables.outputs.checksum }}
 
     - name: Setup ORAS using URL without checksum
       id: no-checksum
       continue-on-error: true
       uses: ./
       with:
-        url: ${{ needs.create-test-variables.outputs.output1 }}
+        url: ${{ needs.create-test-variables.outputs.url }}
     - name: 'Should Fail: Setup ORAS using URL without checksum'
       if: steps.no-checksum.outcome != 'failure'
       run: |
@@ -113,7 +101,7 @@ jobs:
       continue-on-error: true
       uses: ./
       with:
-        url: ${{ needs.create-test-variables.outputs.output1 }}
+        url: ${{ needs.create-test-variables.outputs.url }}
         checksum: abcedf
     - name: 'Should Fail: Setup ORAS using URL and invalid checksum'
       if: steps.invalid-checksum.outcome != 'failure'

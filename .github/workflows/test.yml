@@ -71,6 +71,8 @@ jobs:
         run: echo "URL=$(jq -r 'keys_unsorted[0] as $k | .[$k].linux.amd64.url' ./src/lib/data/releases.json)" >> "$GITHUB_OUTPUT"
       - id: debug0
         run: ls
+      - id: debug00
+        run: echo $PWD
       - id: debug1
         run: echo $URL
       - id: step2

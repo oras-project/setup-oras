@@ -68,9 +68,9 @@ jobs:
       output2: ${{ steps.step2.outputs.CHECKSUM }}
     steps:
       - id: step1
-        run: echo "$URL=(jq -r 'keys_unsorted[0] as $k | .[$k].linux.amd64.url' src/lib/data/releases.json)" >> "$GITHUB_OUTPUT"
+        run: echo "URL=(jq -r 'keys_unsorted[0] as $k | .[$k].linux.amd64.url' src/lib/data/releases.json)" >> "$GITHUB_OUTPUT"
       - id: step2
-        run: echo "$CHECKSUM=(jq -r 'keys_unsorted[0] as $k | .[$k].linux.amd64.checksum' src/lib/data/releases.json)" >> "$GITHUB_OUTPUT"
+        run: echo "CHECKSUM=(jq -r 'keys_unsorted[0] as $k | .[$k].linux.amd64.checksum' src/lib/data/releases.json)" >> "$GITHUB_OUTPUT"
 
   test-custom-url:
     name: Test Setup using URL

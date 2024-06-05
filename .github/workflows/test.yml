@@ -68,8 +68,13 @@ jobs:
       - id: get-checksum-url
         run: |
           RELEASE=$(jq -r 'keys_unsorted[0] as $k | .[$k].linux.amd64' src/lib/data/releases.json)
-          echo "CHECKSUM=$(echo $RELEASE | jq -r '.checksum')" >> "$GITHUB_OUTPUT"
-          echo "URL=$(echo $RELEASE | jq -r '.url')" >> "$GITHUB_OUTPUT"
+          CHECKSUM=$(echo $RELEASE | jq -r '.checksum')
+          echo $CHECKSUM
+          echo "CHECKSUM=$CHECKSUM" >> "$GITHUB_OUTPUT"
+
+          URL=$(echo $RELEASE | jq -r '.url')
+          echo $URL
+          echo "URL=$URL" >> "$GITHUB_OUTPUT"
 
   test-custom-url:
     name: Test Setup using URL

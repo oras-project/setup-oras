@@ -6692,8 +6692,8 @@ const os = __importStar(__nccwpck_require__(2037));
 const releases_json_1 = __importDefault(__nccwpck_require__(2387));
 // Get release info of a certain verion of ORAS CLI
 function getReleaseInfo(version, url, checksum) {
-    // if customized ORAS CLI link and checksum are provided, version is ignored
     if (url && checksum) {
+        // if customized ORAS CLI link and checksum are provided, version is ignored
         return {
             checksum: checksum,
             url: url

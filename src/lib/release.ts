@@ -28,8 +28,8 @@ interface releases {
 
 // Get release info of a certain verion of ORAS CLI
 export function getReleaseInfo(version: string, url: string, checksum: string) {
-    // if customized ORAS CLI link and checksum are provided, version is ignored
     if (url && checksum) {
+        // if customized ORAS CLI link and checksum are provided, version is ignored
         return {
             checksum: checksum, 
             url: url

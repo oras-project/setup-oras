@@ -65,10 +65,11 @@ jobs:
     steps:
       - id: checkout
         uses: actions/checkout@v3
-      - id: get-url
-        run: echo "URL=$(jq -r 'keys_unsorted[0] as $k | .[$k].linux.amd64.url' src/lib/data/releases.json)" >> "$GITHUB_OUTPUT"
-      - id: get-checksum
-        run: echo "CHECKSUM=$(jq -r 'keys_unsorted[0] as $k | .[$k].linux.amd64.checksum' src/lib/data/releases.json)" >> "$GITHUB_OUTPUT"
+      - id: get-checksum-url
+        run: |
+        RELEASE=$(jq -r 'keys_unsorted[0] as $k | .[$k].linux.amd64' src/lib/data/releases.json)
+        echo "CHECKSUM=$(echo $RELEASE | jq -r '.checksum')" >> "$GITHUB_OUTPUT"
+        echo "URL=$(echo $RELEASE | jq -r '.url')" >> "$GITHUB_OUTPUT"
 
   test-custom-url:
     name: Test Setup using URL
@@ -94,6 +95,18 @@ jobs:
       if: steps.no-checksum.outcome != 'failure'
       run: |
         echo "Setup ORAS using URL without checksum should fail, but succeeded."
+        exit 1
+    
+    - name: Setup ORAS using checksum without url
+      id: no-url
+      continue-on-error: true
+      uses: ./
+      with:
+        checksum: ${{ needs.create-test-variables.outputs.checksum }}
+    - name: 'Should Fail: Setup ORAS using checksum without url'
+      if: steps.no-url.outcome != 'failure'
+      run: |
+        echo "Setup ORAS using checksum without url should fail, but succeeded."
         exit 1
     
     - name: Setup ORAS using URL and invalid checksum

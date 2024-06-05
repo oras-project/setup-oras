@@ -24,11 +24,6 @@ async function setup(): Promise<void> {
     const url: string = core.getInput('url');
     const checksum = core.getInput('checksum').toLowerCase();
 
-    // sanity check
-    if (url && !checksum) {
-      throw new Error("user provided url of customized ORAS CLI release but without SHA256 checksum");
-    }
-
     // download ORAS CLI and validate checksum
     const info = getReleaseInfo(version, url, checksum);
     const download_url = info.url;

@@ -28,13 +28,22 @@ interface releases {
 
 // Get release info of a certain verion of ORAS CLI
 export function getReleaseInfo(version: string, url: string, checksum: string) {
-    // if customized ORAS CLI link is provided
+    // if customized ORAS CLI link and checksum are provided, version is ignored
     if (url && checksum) {
         return {
             checksum: checksum, 
             url: url
         } 
     }
+
+    // sanity checks
+    if (url && !checksum) {
+        throw new Error("user provided url of customized ORAS CLI release but without SHA256 checksum");
+    }
+    if (!url && checksum) {
+        throw new Error("user provided SHA256 checksum but without url");
+    }
+
     // get the official release
     const releases = releaseJson as releases;
     if (!(version in releases)) {

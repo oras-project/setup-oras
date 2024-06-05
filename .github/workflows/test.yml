@@ -67,9 +67,9 @@ jobs:
         uses: actions/checkout@v3
       - id: get-checksum-url
         run: |
-        RELEASE=$(jq -r 'keys_unsorted[0] as $k | .[$k].linux.amd64' src/lib/data/releases.json)
-        echo "CHECKSUM=$(echo $RELEASE | jq -r '.checksum')" >> "$GITHUB_OUTPUT"
-        echo "URL=$(echo $RELEASE | jq -r '.url')" >> "$GITHUB_OUTPUT"
+          RELEASE=$(jq -r 'keys_unsorted[0] as $k | .[$k].linux.amd64' src/lib/data/releases.json)
+          echo "CHECKSUM=$(echo $RELEASE | jq -r '.checksum')" >> "$GITHUB_OUTPUT"
+          echo "URL=$(echo $RELEASE | jq -r '.url')" >> "$GITHUB_OUTPUT"
 
   test-custom-url:
     name: Test Setup using URL

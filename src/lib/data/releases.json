@@ -106,5 +106,41 @@
                 "url": "https://github.com/oras-project/oras/releases/download/v1.1.0/oras_1.1.0_windows_amd64.zip"
             }
         }
+    },
+    "1.2.0": {
+        "darwin": {
+            "amd64": {
+                "checksum": "58a8494f5bce778e21d89d90c82e05bd128e7bb9d84dd190d154f8afdbf30541",
+                "url": "https://github.com/oras-project/oras/releases/download/v1.2.0/oras_1.2.0_darwin_amd64.tar.gz"
+            },
+            "arm64": {
+                "checksum": "fea801b0e02c5342e749ef2860e1faebae03e93ae50e33ed40d227e089cf9435",
+                "url": "https://github.com/oras-project/oras/releases/download/v1.2.0/oras_1.2.0_darwin_arm64.tar.gz"
+            }
+        },
+        "linux": {
+            "amd64": {
+                "checksum": "5b3f1cbb86d869eee68120b9b45b9be983f3738442f87ee5f06b00edd0bab336",
+                "url": "https://github.com/oras-project/oras/releases/download/v1.2.0/oras_1.2.0_linux_amd64.tar.gz"
+            },
+            "arm64": {
+                "checksum": "27df680a39fc2fcedc549cb737891623bc696c9a92a03fd341e9356a35836bae",
+                "url": "https://github.com/oras-project/oras/releases/download/v1.2.0/oras_1.2.0_linux_arm64.tar.gz"
+            },
+            "armv7": {
+                "checksum": "054685703cb0c66e51f8143e3bbd3976e217d3d595f0593db43b6dd451e43329",
+                "url": "https://github.com/oras-project/oras/releases/download/v1.2.0/oras_1.2.0_linux_armv7.tar.gz"
+            },
+            "s390x": {
+                "checksum": "69d2e842e592f4d990b33d58ff3c298c4e4c0921dd54ad9e65e3b6dd9427a750",
+                "url": "https://github.com/oras-project/oras/releases/download/v1.2.0/oras_1.2.0_linux_s390x.tar.gz"
+            }
+        },
+        "windows": {
+            "amd64": {
+                "checksum": "f110b42a20bd4728fb0428d36ee6ed10de58cd986bba8e95ecc4f0272cb017ba",
+                "url": "https://github.com/oras-project/oras/releases/download/v1.2.0/oras_1.2.0_windows_amd64.zip"
+            }
+        }
     }
 }

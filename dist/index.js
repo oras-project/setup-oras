@@ -6692,12 +6692,19 @@ const os = __importStar(__nccwpck_require__(2037));
 const releases_json_1 = __importDefault(__nccwpck_require__(2387));
 // Get release info of a certain verion of ORAS CLI
 function getReleaseInfo(version, url, checksum) {
-    // if customized ORAS CLI link is provided
+    // if customized ORAS CLI link and checksum are provided, version is ignored
     if (url && checksum) {
         return {
             checksum: checksum,
             url: url
         };
+    }
+    // sanity checks
+    if (url && !checksum) {
+        throw new Error("user provided url of customized ORAS CLI release but without SHA256 checksum");
+    }
+    if (!url && checksum) {
+        throw new Error("user provided SHA256 checksum but without url");
     }
     // get the official release
     const releases = releases_json_1.default;
@@ -6818,10 +6825,6 @@ function setup() {
             const version = core.getInput('version');
             const url = core.getInput('url');
             const checksum = core.getInput('checksum').toLowerCase();
-            // sanity check
-            if (url && !checksum) {
-                throw new Error("user provided url of customized ORAS CLI release but without SHA256 checksum");
-            }
             // download ORAS CLI and validate checksum
             const info = (0, release_1.getReleaseInfo)(version, url, checksum);
             const download_url = info.url;

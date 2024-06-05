@@ -21,21 +21,23 @@ async function setup(): Promise<void> {
   try {
     // inputs from user
     const version: string = core.getInput('version');
+    const url: string = core.getInput('url');
+    const checksum = core.getInput('checksum').toLowerCase();
 
     // download ORAS CLI and validate checksum
-    const info = getReleaseInfo(version);
-    const url = info.url;
-    console.log(`downloading ORAS CLI from ${url}`);
-    const pathToTarball: string = await tc.downloadTool(url);
+    const info = getReleaseInfo(version, url, checksum);
+    const download_url = info.url;
+    console.log(`downloading ORAS CLI from ${download_url}`);
+    const pathToTarball: string = await tc.downloadTool(download_url);
     console.log("downloading ORAS CLI completed");
-    const checksum = await hash(pathToTarball);
-    if (checksum !== info.checksum) {
-      throw new Error(`checksum of downloaded ORAS CLI ${checksum} does not match expected checksum ${info.checksum}`);
+    const actual_checksum = await hash(pathToTarball);
+    if (actual_checksum !== info.checksum) {
+      throw new Error(`checksum of downloaded ORAS CLI ${actual_checksum} does not match expected checksum ${info.checksum}`);
     }
     console.log("successfully verified downloaded release checksum");
 
     // extract the tarball/zipball onto host runner
-    const extract = url.endsWith('.zip') ? tc.extractZip : tc.extractTar;
+    const extract = download_url.endsWith('.zip') ? tc.extractZip : tc.extractTar;
     const pathToCLI: string = await extract(pathToTarball);
 
     // add `ORAS` to PATH

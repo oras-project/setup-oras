@@ -71,6 +71,8 @@ export function mapPlatform(): string {
             return 'darwin';
         case 'win32':
             return 'windows';
+        case 'freebsd':
+            return 'freebsd';
         default:
             throw new Error(`unsupported platform: ${platform}`);
     }
@@ -85,7 +87,11 @@ export function mapArch(): string {
         case 'arm64':
             return 'arm64';
         case 'arm64':
-                return 'arm64';
+            return 'arm64';
+        case 'ppc64':
+            return 'ppc64';
+        case 'riscv64':
+            return 'riscv64';
         case 's390':
             return 's390x';
         case 'arm':

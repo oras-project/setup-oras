@@ -22,7 +22,7 @@ inputs:
     required: false
     default: 1.2.0
   url:
-    description: URL of the customized ORAS CLI to install
+    description: URL of the customized ORAS CLI to install. Required if 'checksum' is present.
     required: false
   checksum:
     description: SHA256 of the customized ORAS CLI. Required if 'url' is present.

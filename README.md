@@ -18,8 +18,7 @@ steps:
 
 ## Advanced Usage
 
-Install a specific version of the `oras` CLI by specifying the input `version` without the prefix `v`.
-Stable versions (not `beta` or `rc` versions) that can be found at [`oras` releases](https://github.com/oras-project/oras/releases) are supported.
+Install a specific version of the `oras` CLI by specifying the input `version` without the prefix `v`. Stable versions (not pre-release versions) are supported and can be found at [`oras` releases](https://github.com/oras-project/oras/releases).
 
 For example, install `oras` version `v1.0.0`.
 
@@ -31,12 +30,7 @@ steps:
   - run: oras version
 ```
 
-You can also download `oras` CLI from a customized link, by specifying the inputs `url`
-and `checksum`. This can be used to download a `beta` or `rc` version, or download 
-from a proxy. Both inputs must be provided. 
-
-When both `url` and `checksum` are provided, the `version` value is ignored and the 
-download will be from `url` and checked against `checksum`.
+You can also download `oras` CLI from any preferred trusted source, by specifying link of the source via `url` and the SHA256 checksum via `checksum`. This can be used to download a `beta` or `rc` version, or download from a proxy. 
 
 For example, install `oras` version `v1.2.0-beta.1`.
 

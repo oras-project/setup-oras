@@ -30,7 +30,7 @@ steps:
   - run: oras version
 ```
 
-You can also download `oras` CLI from any preferred trusted source, by specifying link of the source via `url` and the SHA256 checksum via `checksum`. This can be used to download a `beta` or `rc` version, or download from a proxy. 
+You can also download `oras` CLI from any preferred trusted source, by specifying link of the source via `url` and the SHA256 checksum via `checksum`. This can be used to download a pre-release version or download from a proxy other than `github.com`. 
 
 For example, install `oras` version `v1.2.0-beta.1`.
 

@@ -89,7 +89,7 @@ export function mapArch(): string {
         case 'arm64':
             return 'arm64';
         case 'ppc64':
-            return 'ppc64';
+            return 'ppc64le';
         case 'riscv64':
             return 'riscv64';
         case 's390':

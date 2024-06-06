@@ -137,7 +137,7 @@
                 "checksum": "054685703cb0c66e51f8143e3bbd3976e217d3d595f0593db43b6dd451e43329",
                 "url": "https://github.com/oras-project/oras/releases/download/v1.2.0/oras_1.2.0_linux_armv7.tar.gz"
             },
-            "ppc64": {
+            "ppc64le": {
                 "checksum": "af5ee50434c7263b1460978af83e7690570e8999678fae9db6c5dbb38467fed5",
                 "url": "https://github.com/oras-project/oras/releases/download/v1.2.0/oras_1.2.0_linux_ppc64le.tar.gz"
             },

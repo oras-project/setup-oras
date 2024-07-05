@@ -6625,7 +6625,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.hash = void 0;
+exports.hash = hash;
 const crypto = __importStar(__nccwpck_require__(6113));
 const fs = __importStar(__nccwpck_require__(7147));
 // hash computes SH256 of file at path.
@@ -6638,7 +6638,6 @@ function hash(path) {
         stream.on('end', () => resolve(hash.digest('hex')));
     });
 }
-exports.hash = hash;
 
 
 /***/ }),
@@ -6687,7 +6686,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.getBinaryExtension = exports.mapArch = exports.mapPlatform = exports.getReleaseInfo = void 0;
+exports.getReleaseInfo = getReleaseInfo;
+exports.mapPlatform = mapPlatform;
+exports.mapArch = mapArch;
+exports.getBinaryExtension = getBinaryExtension;
 const os = __importStar(__nccwpck_require__(2037));
 const releases_json_1 = __importDefault(__nccwpck_require__(2387));
 // Get release info of a certain verion of ORAS CLI
@@ -6720,7 +6722,6 @@ function getReleaseInfo(version, url, checksum) {
     }
     return download;
 }
-exports.getReleaseInfo = getReleaseInfo;
 // getPlatform maps os.platform() to ORAS supported platforms.
 function mapPlatform() {
     const platform = os.platform();
@@ -6737,7 +6738,6 @@ function mapPlatform() {
             throw new Error(`unsupported platform: ${platform}`);
     }
 }
-exports.mapPlatform = mapPlatform;
 // mapArch maps os.arch() to ORAS supported architectures.
 function mapArch() {
     const architecture = os.arch();
@@ -6760,12 +6760,10 @@ function mapArch() {
             throw new Error(`unsupported architecture: ${architecture}`);
     }
 }
-exports.mapArch = mapArch;
 function getBinaryExtension() {
     const platform = mapPlatform();
     return platform === 'windows' ? '.exe' : '';
 }
-exports.getBinaryExtension = getBinaryExtension;
 
 
 /***/ }),

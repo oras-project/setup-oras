@@ -45,8 +45,9 @@ steps:
 
 ## Docs
 
-Documentation for the ORAS CLI is located on
-the [project website](https://oras.land/docs/category/cli).
+Documentation for the ORAS CLI is located on the [project website][docs-cli].
+
+[docs-cli]: https://oras.land/docs/commands/use_oras_cli
 
 ## Code of Conduct
 

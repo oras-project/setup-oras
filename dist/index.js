@@ -6752,7 +6752,7 @@ function mapArch() {
             return 'ppc64le';
         case 'riscv64':
             return 'riscv64';
-        case 's390':
+        case 's390x':
             return 's390x';
         case 'arm':
             return 'armv7';

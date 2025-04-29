@@ -256,5 +256,55 @@
                 "url": "https://github.com/oras-project/oras/releases/download/v1.2.2/oras_1.2.2_windows_amd64.zip"
             }
         }
+    },
+    "1.2.3": {
+        "darwin": {
+            "amd64": {
+                "checksum": "29d8b684dadd9b08614fe9023a5ac8ff0ef1bef1c9795ad8076e3215eb207724",
+                "url": "https://github.com/oras-project/oras/releases/download/v1.2.3/oras_1.2.3_darwin_amd64.tar.gz"
+            },
+            "arm64": {
+                "checksum": "ca4188a0c690536d34baf2a4c3507b3fcc11a06979aeec6da3560a0c4d944a6a",
+                "url": "https://github.com/oras-project/oras/releases/download/v1.2.3/oras_1.2.3_darwin_arm64.tar.gz"
+            }
+        },
+        "freebsd": {
+            "amd64": {
+                "checksum": "0cd77c9340578e4ef86533d5603498fe006f6b962d619612d49769aa01fe90e3",
+                "url": "https://github.com/oras-project/oras/releases/download/v1.2.3/oras_1.2.3_freebsd_amd64.tar.gz"
+            }
+        },
+        "linux": {
+            "amd64": {
+                "checksum": "b4efc97a91f471f323f193ea4b4d63d8ff443ca3aab514151a30751330852827",
+                "url": "https://github.com/oras-project/oras/releases/download/v1.2.3/oras_1.2.3_linux_amd64.tar.gz"
+            },
+            "arm64": {
+                "checksum": "90e24e234dc6dffe73365533db66fd14449d2c9ae77381081596bf92f40f6b82",
+                "url": "https://github.com/oras-project/oras/releases/download/v1.2.3/oras_1.2.3_linux_arm64.tar.gz"
+            },
+            "armv7": {
+                "checksum": "f5d32565d714fdddc4f06fd8c00e9cc5719398ccb918a5d64a54b5531da4f893",
+                "url": "https://github.com/oras-project/oras/releases/download/v1.2.3/oras_1.2.3_linux_armv7.tar.gz"
+            },
+            "ppc64le": {
+                "checksum": "6362e6df98961906c55fbbaf789610c575a8cd4c72a0e18a41561b36fd4352ef",
+                "url": "https://github.com/oras-project/oras/releases/download/v1.2.3/oras_1.2.3_linux_ppc64le.tar.gz"
+            },
+            "riscv64": {
+                "checksum": "a1f2a861b5e5e295925dcdeb226a3e097e92b48c87a00c5cbbdffc6288597b37",
+                "url": "https://github.com/oras-project/oras/releases/download/v1.2.3/oras_1.2.3_linux_riscv64.tar.gz"
+            },
+            "s390x": {
+                "checksum": "7993b9247c49e7aa3f107568c33c37d6bcae87018651a6def8278ea7c2c7a3a8",
+                "url": "https://github.com/oras-project/oras/releases/download/v1.2.3/oras_1.2.3_linux_s390x.tar.gz"
+            }
+        },
+        "windows": {
+            "amd64": {
+                "checksum": "8fe890f5c6c89b06fb138839e533a112e0fc026a25b2c8c1b042b32455a56947",
+                "url": "https://github.com/oras-project/oras/releases/download/v1.2.3/oras_1.2.3_windows_amd64.zip"
+            }
+        }
     }
 }

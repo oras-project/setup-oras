@@ -19,7 +19,7 @@
   "dependencies": {
     "@actions/core": "^1.11.1",
     "@actions/tool-cache": "^2.0.2",
-    "@types/node": "^22.15.21",
+    "@types/node": "^22.15.29",
     "@vercel/ncc": "^0.38.3",
     "typescript": "^5.8.3"
   }

@@ -26,7 +26,7 @@ jobs:
   check-dist:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: remove js files in dist/
         run: find dist/ -type f \( -name "*.json" -o -name "*.js" -o -name "*.js.map" \) -delete
       - name: Setup Node 16.x

@@ -20,7 +20,7 @@ inputs:
   version:
     description: Version of the official ORAS CLI to install
     required: false
-    default: 1.2.3
+    default: 1.3.0
   url:
     description: URL of the customized ORAS CLI to install. Required if 'checksum' is present.
     required: false

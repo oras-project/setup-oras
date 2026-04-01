@@ -2,3 +2,4 @@
 
 Owners:
   - Shiwei Zhang (@shizhMSFT)
+  - Terry Howe (@TerryHowe)

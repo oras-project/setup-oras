@@ -1,6 +1,6 @@
 {
   "name": "setup-oras",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Set up your GitHub Actions workflow with a specific version of ORAS",
   "scripts": {
     "build": "ncc build src/setup.ts"
@@ -17,9 +17,9 @@
   },
   "homepage": "https://github.com/oras-project/setup-oras#readme",
   "dependencies": {
-    "@actions/core": "^2.0.1",
-    "@actions/tool-cache": "^2.0.2",
-    "@types/node": "^25.5.0",
+    "@actions/core": "^2.0.3",
+    "@actions/tool-cache": "^3.0.1",
+    "@types/node": "^24.0.0",
     "@vercel/ncc": "^0.38.4",
     "typescript": "^6.0.2"
   }

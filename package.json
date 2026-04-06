@@ -3,7 +3,7 @@
   "version": "0.2.0",
   "description": "Set up your GitHub Actions workflow with a specific version of ORAS",
   "scripts": {
-    "build": "ncc build src/setup.ts"
+    "build": "esbuild src/setup.ts --bundle --platform=node --target=node24 --outfile=dist/index.js"
   },
   "repository": {
     "type": "git",
@@ -17,10 +17,10 @@
   },
   "homepage": "https://github.com/oras-project/setup-oras#readme",
   "dependencies": {
-    "@actions/core": "^2.0.3",
-    "@actions/tool-cache": "^3.0.1",
+    "@actions/core": "^3.0.0",
+    "@actions/tool-cache": "^4.0.0",
     "@types/node": "^25.5.2",
-    "@vercel/ncc": "^0.38.4",
+    "esbuild": "^0.28.0",
     "typescript": "^6.0.2"
   },
   "overrides": {

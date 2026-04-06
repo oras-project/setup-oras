@@ -3,7 +3,7 @@
   "version": "0.2.0",
   "description": "Set up your GitHub Actions workflow with a specific version of ORAS",
   "scripts": {
-    "build": "esbuild src/setup.ts --bundle --platform=node --format=cjs --target=node24 --legal-comments=external --outfile=dist/index.js && node -e \"const fs=require('fs');const src='dist/index.js.LEGAL.txt';const dst='dist/licenses.txt';if(fs.existsSync(src)){fs.copyFileSync(src,dst);fs.unlinkSync(src);}else{fs.writeFileSync(dst,'');}\""
+    "build": "esbuild src/setup.ts --bundle --platform=node --format=cjs --target=node24 --metafile=dist/meta.json --outfile=dist/index.js && node scripts/generate-licenses.js dist/meta.json dist/licenses.txt && rm dist/meta.json"
   },
   "repository": {
     "type": "git",

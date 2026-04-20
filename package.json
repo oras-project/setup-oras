@@ -21,7 +21,7 @@
     "@actions/tool-cache": "^4.0.0",
     "@types/node": "^25.6.0",
     "esbuild": "^0.28.0",
-    "typescript": "^6.0.2"
+    "typescript": "^6.0.3"
   },
   "overrides": {
     "undici": ">=6.24.1"

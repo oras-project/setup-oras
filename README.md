@@ -12,7 +12,7 @@ Setup the `oras` CLI of the default version:
 
 ```yaml
 steps:
-  - uses: oras-project/setup-oras@v1
+  - uses: oras-project/setup-oras@v2.0.0
   - run: oras version
 ```
 
@@ -24,7 +24,7 @@ For example, install `oras` version `v1.0.0`.
 
 ```yaml
 steps:
-  - uses: oras-project/setup-oras@v1
+  - uses: oras-project/setup-oras@v2.0.0
     with:
       version: 1.0.0
   - run: oras version
@@ -36,7 +36,7 @@ For example, install `oras` version `v1.2.0-beta.1`.
 
 ```yaml
 steps:
-  - uses: oras-project/setup-oras@v1
+  - uses: oras-project/setup-oras@v2.0.0
     with:
       url: https://github.com/oras-project/oras/releases/download/v1.2.0-beta.1/oras_1.2.0-beta.1_linux_amd64.tar.gz
       checksum: 37d86f848f7c7c471035cf8218f06372fd72a9fbdca1e10f509738e222b3b2be

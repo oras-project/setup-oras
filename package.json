@@ -19,7 +19,7 @@
   "dependencies": {
     "@actions/core": "^3.0.1",
     "@actions/tool-cache": "^4.0.0",
-    "@types/node": "^25.9.2",
+    "@types/node": "^25.9.3",
     "esbuild": "^0.28.1",
     "typescript": "^6.0.3"
   },

@@ -1,0 +1,141 @@
+# Copyright The ORAS Authors.
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+# Automatically cuts a PATCH release when a new ORAS CLI version is added to
+# src/lib/data/releases.json on main (e.g. via the "Update releases.json"
+# workflow). Minor and major releases are always cut by hand — see
+# RELEASING.md.
+#
+# This job creates the release AND moves the floating vX / vX.Y tags itself,
+# rather than relying on update-version.yml. A release created with the default
+# GITHUB_TOKEN does not emit a `release: published` event (GitHub suppresses it
+# to prevent workflow recursion), so update-version.yml would never fire.
+
+name: Auto release
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'src/lib/data/releases.json'
+  workflow_dispatch:
+
+# Serialize releases so two quick pushes can't race to tag the same line.
+concurrency:
+  group: auto-release
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  auto-release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+
+      - name: Detect newly added ORAS CLI versions
+        id: detect
+        run: |
+          set -euo pipefail
+          if ! git rev-parse -q --verify HEAD^ >/dev/null; then
+            echo "No parent commit; nothing to diff." >&2
+            echo "added=" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          git show HEAD^:src/lib/data/releases.json > /tmp/releases-old.json
+          ADDED=$(jq -r -s '(.[1] | keys) - (.[0] | keys) | join(", ")' \
+            /tmp/releases-old.json src/lib/data/releases.json)
+          echo "added=${ADDED}" >> "$GITHUB_OUTPUT"
+          if [ -z "${ADDED}" ]; then
+            echo "No new ORAS CLI version keys added; skipping release." >&2
+          else
+            echo "New ORAS CLI version(s): ${ADDED}" >&2
+          fi
+
+      - name: Compute next patch version
+        id: version
+        if: steps.detect.outputs.added != ''
+        run: |
+          set -euo pipefail
+          LATEST=$(git tag -l 'v*.*.*' | sort -V | tail -1)
+          if [ -z "${LATEST}" ]; then
+            echo "No existing vX.Y.Z tag found; refusing to guess a version." >&2
+            exit 1
+          fi
+          V=${LATEST#v}
+          MAJOR=${V%%.*}
+          REST=${V#*.}
+          MINOR=${REST%%.*}
+          PATCH=${REST#*.}
+          NEXT="v${MAJOR}.${MINOR}.$((PATCH + 1))"
+          if git rev-parse -q --verify "refs/tags/${NEXT}" >/dev/null; then
+            echo "Tag ${NEXT} already exists; nothing to do." >&2
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          {
+            echo "latest=${LATEST}"
+            echo "next=${NEXT}"
+            echo "major_tag=v${MAJOR}"
+            echo "minor_tag=v${MAJOR}.${MINOR}"
+            echo "skip=false"
+          } >> "$GITHUB_OUTPUT"
+          echo "Releasing ${NEXT} (previous: ${LATEST})" >&2
+
+      - name: Create release
+        if: steps.detect.outputs.added != '' && steps.version.outputs.skip == 'false'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NEXT: ${{ steps.version.outputs.next }}
+          LATEST: ${{ steps.version.outputs.latest }}
+          ADDED: ${{ steps.detect.outputs.added }}
+          REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          NOTES=$(cat <<EOF
+          ## Highlights
+
+          - Support ORAS CLI version(s) \`${ADDED}\`
+
+          Automated patch release cut by \`.github/workflows/auto-release.yml\`
+          when new ORAS CLI version(s) landed in \`src/lib/data/releases.json\`.
+
+          **Full Changelog**: https://github.com/${REPO}/compare/${LATEST}...${NEXT}
+          EOF
+          )
+          gh release create "${NEXT}" \
+            --repo "${REPO}" \
+            --target "${GITHUB_SHA}" \
+            --title "${NEXT}" \
+            --notes "${NOTES}"
+
+      - name: Move floating major and minor tags
+        if: steps.detect.outputs.added != '' && steps.version.outputs.skip == 'false'
+        env:
+          MAJOR_TAG: ${{ steps.version.outputs.major_tag }}
+          MINOR_TAG: ${{ steps.version.outputs.minor_tag }}
+        run: |
+          set -euo pipefail
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+          git tag -f "${MAJOR_TAG}" "${GITHUB_SHA}"
+          git tag -f "${MINOR_TAG}" "${GITHUB_SHA}"
+          git push origin "${MAJOR_TAG}" "${MINOR_TAG}" --force

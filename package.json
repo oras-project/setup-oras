@@ -24,6 +24,6 @@
     "typescript": "^7.0.2"
   },
   "overrides": {
-    "undici": ">=6.24.1"
+    "undici": ">=8.5.0"
   }
 }

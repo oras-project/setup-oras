@@ -1,0 +1,139 @@
+# Copyright The ORAS Authors.
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+name: Auto release
+
+on:
+  workflow_run:
+    workflows: [Tests, Check dist/]
+    types: [completed]
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      commit:
+        description: 'Optional main commit to release or retry (SHA)'
+        required: false
+
+concurrency:
+  group: release-tags
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  release:
+    if: >-
+      (github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main') ||
+      (github.event_name == 'workflow_run' && github.event.workflow_run.event == 'push' && github.event.workflow_run.conclusion == 'success')
+    runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      contents: write
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+          ref: ${{ github.event.workflow_run.head_sha || inputs.commit || github.sha }}
+
+      - name: Confirm main checks passed
+        id: checks
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          if ! git merge-base --is-ancestor HEAD origin/main; then
+            echo 'The selected commit is not on main.' >&2
+            exit 1
+          fi
+          sha=$(git rev-parse HEAD)
+          for workflow in test.yml check-dist.yml; do
+            conclusion=$(gh run list --repo "$GITHUB_REPOSITORY" --workflow "$workflow" \
+              --commit "$sha" --event push --limit 1 --json conclusion \
+              --jq '.[0].conclusion // ""')
+            if [ "$conclusion" != success ]; then
+              echo "$workflow has not passed on $sha; skipping release."
+              exit 0
+            fi
+          done
+          echo 'passed=true' >> "$GITHUB_OUTPUT"
+
+      - name: Detect versions and choose patch release
+        if: steps.checks.outputs.passed == 'true'
+        id: detect
+        run: |
+          set -euo pipefail
+          git fetch --force origin '+refs/tags/*:refs/tags/*'
+          tags=$(git tag -l 'v*.*.*' |
+            grep -E '^v[0-9]+\.[0-9]+\.[0-9]+$' | sort -V || true)
+          latest=$(printf '%s\n' "$tags" | tail -1)
+          if [ -z "$latest" ]; then
+            echo 'No existing patch release tag found.' >&2
+            exit 1
+          fi
+          sha=$(git rev-parse HEAD)
+          released_sha=$(git rev-parse "${latest}^{commit}")
+          if [ "$sha" != "$released_sha" ] &&
+            git merge-base --is-ancestor HEAD "$released_sha"; then
+            echo "The selected commit is already covered by $latest."
+            exit 0
+          fi
+          base=$latest
+          tag=$latest
+          if [ "$sha" = "$released_sha" ]; then
+            base=$(printf '%s\n' "$tags" | tail -2 | head -1)
+            if [ "$base" = "$latest" ]; then
+              echo 'No previous release tag to compare against.' >&2
+              exit 1
+            fi
+          else
+            patch=${latest##*.}
+            tag="${latest%.*}.$((patch + 1))"
+          fi
+          added=$(jq -r -s '
+            ((.[1] | keys) - (.[0] | keys)) as $versions |
+            if all($versions[]; test("^[0-9]+\\.[0-9]+\\.[0-9]+$"))
+            then $versions | join(", ")
+            else error("Invalid ORAS CLI version key") end
+          ' <(git show "$base:src/lib/data/releases.json") src/lib/data/releases.json)
+          if [ -z "$added" ]; then
+            echo 'No new ORAS CLI versions since the latest release.'
+            exit 0
+          fi
+          echo "added=$added" >> "$GITHUB_OUTPUT"
+          echo "tag=$tag" >> "$GITHUB_OUTPUT"
+          echo "major=${tag%%.*}" >> "$GITHUB_OUTPUT"
+          echo "minor=${tag%.*}" >> "$GITHUB_OUTPUT"
+          echo "base=$base" >> "$GITHUB_OUTPUT"
+          echo "sha=$sha" >> "$GITHUB_OUTPUT"
+
+      - name: Publish release and move floating tags
+        if: steps.detect.outputs.added != ''
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ steps.detect.outputs.tag }}
+          MAJOR: ${{ steps.detect.outputs.major }}
+          MINOR: ${{ steps.detect.outputs.minor }}
+          BASE: ${{ steps.detect.outputs.base }}
+          SHA: ${{ steps.detect.outputs.sha }}
+          ADDED: ${{ steps.detect.outputs.added }}
+        run: |
+          set -euo pipefail
+          if ! gh release view "$TAG" >/dev/null 2>&1; then
+            gh release create "$TAG" --target "$SHA" --title "$TAG" \
+              --generate-notes --notes-start-tag "$BASE" \
+              --notes "$(printf '## Highlights\n\n- Support ORAS CLI version(s): %s' "$ADDED")"
+          fi
+          git tag -f "$MAJOR" "$SHA"
+          git tag -f "$MINOR" "$SHA"
+          git push origin "refs/tags/$MAJOR" "refs/tags/$MINOR" --force

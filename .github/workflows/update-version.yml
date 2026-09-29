@@ -17,6 +17,10 @@ on:
   release:
     types: [published]
 
+concurrency:
+  group: release-tags
+  cancel-in-progress: false
+
 jobs:
   update-major-minor-tags:
     runs-on: ubuntu-latest

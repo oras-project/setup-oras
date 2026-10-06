@@ -34,10 +34,6 @@ workflow can also be run manually on `main` with a commit SHA to backfill an
 unreleased merge or retry a failed release or tag update. Older commits
 already covered by a newer release are skipped.
 
-ORAS CLI `1.3.4` is already on `main` but not yet released. It will be included
-after the next successful `main` checks; if that run does not release it,
-dispatch the workflow with the `1.3.4` merge commit SHA.
-
 The `github-actions` bot needs permission to force-push floating tags if a tag
 ruleset is added. The workflow moves them itself because releases created with
 `GITHUB_TOKEN` do not trigger `release: published` workflows.

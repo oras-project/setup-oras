@@ -15,6 +15,7 @@ name: Auto release
 
 on:
   workflow_run:
+    # Keep these names in sync with test.yml and check-dist.yml, also used in the gate below.
     workflows: [Tests, Check dist/]
     types: [completed]
     branches: [main]

@@ -28,6 +28,23 @@ defaults:
     shell: bash
 
 jobs:
+  check-release-workflow-names:
+    name: Check release workflow names
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Check auto-release workflow references
+        run: |
+          set -euo pipefail
+          names=$(yq -N '.name' .github/workflows/*.yml)
+          required=$(yq -e '.on.workflow_run.workflows[]' .github/workflows/auto-release.yml)
+          while IFS= read -r name; do
+            if ! grep -qxF -- "$name" <<< "$names"; then
+              echo "::error::workflow_run references missing workflow '$name'"
+              exit 1
+            fi
+          done <<< "$required"
+
   test-basic-setup:
     name: Test Setup ORAS CLI
     runs-on: ${{ matrix.os }}

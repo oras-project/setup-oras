@@ -19,6 +19,18 @@ The action release tags (`vX.Y.Z`) are separate from the ORAS CLI versions in
 [`releases.json`](src/lib/data/releases.json). A new CLI version requires an
 action release before consumers using `@vX` or `@vX.Y` can install it.
 
+## Release immutability and floating tags
+
+Releases with full version tags (`vX.Y.Z`) published after release immutability
+was enabled on 2026-10-17 are immutable: their tags and assets cannot change
+once published. Fix a bad release by publishing the next patch release rather than
+editing its assets or moving its tag. Releases published before immutability
+was enabled, including v2.0.2 and earlier, remain mutable.
+
+Floating tags (`vX` and `vX.Y`) must stay plain Git tags. Never create a GitHub
+release for a floating tag: publishing it would lock the tag and prevent the
+force-pushes in `auto-release.yml` and `update-version.yml` from moving it.
+
 ## Automatic patch releases
 
 The [update workflow](.github/workflows/update-releases.yml) opens a PR with
@@ -34,9 +46,16 @@ workflow can also be run manually on `main` with a commit SHA to backfill an
 unreleased merge or retry a failed release or tag update. Older commits
 already covered by a newer release are skipped.
 
-The `github-actions` bot needs permission to force-push floating tags if a tag
-ruleset is added. The workflow moves them itself because releases created with
-`GITHUB_TOKEN` do not trigger `release: published` workflows.
+The workflow moves floating tags itself because releases created with
+`GITHUB_TOKEN` do not trigger `release: published` workflows. The current
+rulesets allow these moves:
+
+- `release-tags` matches `refs/tags/v*` and restricts deletion only. Tag updates
+  and force-pushes remain allowed so the release workflows can move `vX` and
+  `vX.Y` with `GITHUB_TOKEN`. GitHub rejects the GitHub Actions app as a bypass
+  actor for this ruleset.
+- `no-version-branches` matches `refs/heads/v*` and restricts creation, so a
+  branch cannot shadow a release tag.
 
 ## Manual minor and major releases
 
@@ -51,5 +70,8 @@ gh release create vX.Y.0 --repo oras-project/setup-oras --target main --generate
 For a manually published release, the
 [update-version workflow](.github/workflows/update-version.yml) moves `vX`
 and `vX.Y`. Check that the workflow succeeded and both tags point at the
-release commit. If tag protection blocks the move, fix the ruleset and rerun
-that workflow.
+release commit. If a floating-tag move fails in either release workflow,
+check whether a ruleset has started restricting tag updates or force-pushes.
+Fix the ruleset to allow the tag move, then rerun the failed workflow.
+For an automatic release, use the manual retry described above
+with the original release commit SHA.

@@ -15,6 +15,9 @@ name: Check dist/
 
 on:
   push:
+    # Skip floating tag moves (vX, vX.Y) pushed by the release workflows.
+    branches:
+      - '**'
     paths-ignore:
       - '**.md'
   pull_request:

@@ -46,16 +46,33 @@ workflow can also be run manually on `main` with a commit SHA to backfill an
 unreleased merge or retry a failed release or tag update. Older commits
 already covered by a newer release are skipped.
 
-The workflow moves floating tags itself because releases created with
-`GITHUB_TOKEN` do not trigger `release: published` workflows. The current
-rulesets allow these moves:
+The release is created with `GITHUB_TOKEN`, but the floating tags are pushed
+over SSH with the `TAG_DEPLOY_KEY` deploy key. The workflow moves them itself
+because releases created with `GITHUB_TOKEN` do not trigger
+`release: published` workflows. The rulesets:
 
-- `release-tags` matches `refs/tags/v*` and restricts deletion only. Tag updates
-  and force-pushes remain allowed so the release workflows can move `vX` and
-  `vX.Y` with `GITHUB_TOKEN`. GitHub rejects the GitHub Actions app as a bypass
-  actor for this ruleset.
+- `release-tags` matches `refs/tags/v*` and restricts deletion, updates and
+  force-pushes. The deploy key is its only bypass actor, so only the release
+  workflows can move `vX` and `vX.Y`. GitHub rejects the GitHub Actions app as
+  a bypass actor for this ruleset, which is why a deploy key is used.
 - `no-version-branches` matches `refs/heads/v*` and restricts creation, so a
   branch cannot shadow a release tag.
+
+## Deploy key
+
+Floating tags can only be moved with the repository deploy key. To create or
+rotate it:
+
+```bash
+ssh-keygen -t ed25519 -N '' -C setup-oras-tags -f tag_deploy_key
+gh repo deploy-key add tag_deploy_key.pub --repo oras-project/setup-oras \
+  --allow-write --title 'release tags'
+gh secret set TAG_DEPLOY_KEY --repo oras-project/setup-oras < tag_deploy_key
+rm tag_deploy_key tag_deploy_key.pub
+```
+
+If the key is missing, the release is still published but the tag move fails.
+Restore the key, then rerun the auto-release workflow with the release commit.
 
 ## Manual minor and major releases
 
@@ -71,7 +88,6 @@ For a manually published release, the
 [update-version workflow](.github/workflows/update-version.yml) moves `vX`
 and `vX.Y`. Check that the workflow succeeded and both tags point at the
 release commit. If a floating-tag move fails in either release workflow,
-check whether a ruleset has started restricting tag updates or force-pushes.
-Fix the ruleset to allow the tag move, then rerun the failed workflow.
-For an automatic release, use the manual retry described above
-with the original release commit SHA.
+check the deploy key and that it is still the `release-tags` bypass actor, then
+rerun the failed workflow. For an automatic release, use the manual retry
+described above with the original release commit SHA.

@@ -29,6 +29,8 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           ref: ${{ github.event.release.tag_name }}
+          # Deploy key is the only bypass actor for the floating tag ruleset.
+          ssh-key: ${{ secrets.TAG_DEPLOY_KEY }}
       - name: Git config
         run: |
           git config user.name github-actions

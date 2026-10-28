@@ -46,6 +46,8 @@ jobs:
         with:
           fetch-depth: 0
           ref: ${{ github.event.workflow_run.head_sha || inputs.commit || github.sha }}
+          # Deploy key is the only bypass actor for the floating tag ruleset.
+          ssh-key: ${{ secrets.TAG_DEPLOY_KEY }}
 
       - name: Confirm main checks passed
         id: checks

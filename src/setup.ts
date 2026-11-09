@@ -23,12 +23,17 @@ async function setup(): Promise<void> {
     const version: string = core.getInput('version');
     const url: string = core.getInput('url');
     const checksum = core.getInput('checksum').toLowerCase();
+    const token: string = core.getInput('token');
+    if (token) {
+      core.setSecret(token);
+    }
 
     // download ORAS CLI and validate checksum
     const info = getReleaseInfo(version, url, checksum);
     const download_url = info.url;
     console.log(`downloading ORAS CLI from ${download_url}`);
-    const pathToTarball: string = await tc.downloadTool(download_url);
+    const auth = token ? `token ${token}` : undefined;
+    const pathToTarball: string = await tc.downloadTool(download_url, undefined, auth);
     console.log("downloading ORAS CLI completed");
     const actual_checksum = await hash(pathToTarball);
     if (actual_checksum !== info.checksum) {

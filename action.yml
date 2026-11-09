@@ -27,6 +27,12 @@ inputs:
   checksum:
     description: SHA256 of the customized ORAS CLI. Required if 'url' is present.
     required: false
+  token:
+    description: >-
+      GitHub token for the download.
+      Set to an empty string to download without a token.
+    required: false
+    default: ${{ github.token }}
 runs:
   using: node24
   main: dist/index.js

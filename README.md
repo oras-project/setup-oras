@@ -43,6 +43,20 @@ steps:
   - run: oras version
 ```
 
+### Authentication
+
+The action uses `github.token` for the download. This gives a higher rate limit. To use a different token, set `token`:
+
+```yaml
+steps:
+  - uses: oras-project/setup-oras@v2
+    with:
+      token: ${{ secrets.MY_GITHUB_TOKEN }}
+  - run: oras version
+```
+
+The action also sends the token to a custom `url`. To download without a token, set `token` to an empty string.
+
 ## Pinning
 
 Choose how to reference the action based on your update and reproducibility needs:

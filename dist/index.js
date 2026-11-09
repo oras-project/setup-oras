@@ -31403,6 +31403,9 @@ var ExitCode;
   ExitCode2[ExitCode2["Success"] = 0] = "Success";
   ExitCode2[ExitCode2["Failure"] = 1] = "Failure";
 })(ExitCode || (ExitCode = {}));
+function setSecret(secret) {
+  issueCommand("add-mask", {}, secret);
+}
 function addPath(inputPath) {
   const filePath = process.env["GITHUB_PATH"] || "";
   if (filePath) {
@@ -32542,10 +32545,15 @@ async function setup() {
     const version = getInput("version");
     const url = getInput("url");
     const checksum = getInput("checksum").toLowerCase();
+    const token = getInput("token");
+    if (token) {
+      setSecret(token);
+    }
     const info2 = getReleaseInfo(version, url, checksum);
     const download_url = info2.url;
     console.log(`downloading ORAS CLI from ${download_url}`);
-    const pathToTarball = await downloadTool(download_url);
+    const auth = token ? `token ${token}` : void 0;
+    const pathToTarball = await downloadTool(download_url, void 0, auth);
     console.log("downloading ORAS CLI completed");
     const actual_checksum = await hash(pathToTarball);
     if (actual_checksum !== info2.checksum) {

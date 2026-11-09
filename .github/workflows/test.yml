@@ -102,6 +102,11 @@ jobs:
         url: ${{ needs.create-test-variables.outputs.url }}
         checksum: ${{ needs.create-test-variables.outputs.checksum }}
 
+    - name: Setup ORAS without token
+      uses: ./
+      with:
+        token: ''
+
     - name: Setup ORAS using URL without checksum
       id: no-checksum
       continue-on-error: true

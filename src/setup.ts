@@ -32,7 +32,7 @@ async function setup(): Promise<void> {
     const info = getReleaseInfo(version, url, checksum);
     const download_url = info.url;
     console.log(`downloading ORAS CLI from ${download_url}`);
-    const auth = token ? `token ${token}` : undefined;
+    const auth = token && new URL(download_url).hostname === 'github.com' ? `token ${token}` : undefined;
     const pathToTarball: string = await tc.downloadTool(download_url, undefined, auth);
     console.log("downloading ORAS CLI completed");
     const actual_checksum = await hash(pathToTarball);

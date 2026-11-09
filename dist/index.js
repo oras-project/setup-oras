@@ -32552,7 +32552,7 @@ async function setup() {
     const info2 = getReleaseInfo(version, url, checksum);
     const download_url = info2.url;
     console.log(`downloading ORAS CLI from ${download_url}`);
-    const auth = token ? `token ${token}` : void 0;
+    const auth = token && new URL(download_url).hostname === "github.com" ? `token ${token}` : void 0;
     const pathToTarball = await downloadTool(download_url, void 0, auth);
     console.log("downloading ORAS CLI completed");
     const actual_checksum = await hash(pathToTarball);

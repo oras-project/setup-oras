@@ -32,7 +32,7 @@ inputs:
       GitHub token for the download.
       Set to an empty string to download without a token.
     required: false
-    default: ${{ github.token }}
+    default: ${{ github.server_url == 'https://github.com' && github.token || '' }}
 runs:
   using: node24
   main: dist/index.js

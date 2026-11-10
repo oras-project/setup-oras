@@ -43,6 +43,20 @@ steps:
   - run: oras version
 ```
 
+### Authentication
+
+On github.com, the action uses `github.token` for the download. This gives a higher rate limit. On GitHub Enterprise Server, there is no default token. To use a different token, set `token`:
+
+```yaml
+steps:
+  - uses: oras-project/setup-oras@v2
+    with:
+      token: ${{ secrets.MY_GITHUB_TOKEN }}
+  - run: oras version
+```
+
+The action sends the token only to `github.com`. It does not send the token to a custom `url` on a different host. To download without a token, set `token` to an empty string.
+
 ## Pinning
 
 Choose how to reference the action based on your update and reproducibility needs:

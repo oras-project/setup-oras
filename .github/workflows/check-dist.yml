@@ -48,3 +48,59 @@ jobs:
             git diff
             exit 1
           fi
+
+  # Dependabot only edits the manifest, so the check above is right to fail on
+  # its branches: the bundled dependency in dist/index.js still carries the old
+  # version. Rebuild the bundle there and push it back, so a bump of a bundled
+  # dependency can reach a green run without a maintainer pushing the artifact.
+  rebuild-dependabot:
+    # Dependabot branches live in this repository, so a job-level `permissions:`
+    # block is honoured and `pull_request_target` (which would run PR code with
+    # an elevated token) is not needed. The guard reads the PR author and the
+    # head repository, not `github.actor`, which becomes whoever re-runs the job.
+    if: >-
+      github.event_name == 'pull_request' &&
+      github.event.pull_request.user.login == 'dependabot[bot]' &&
+      github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
+      - name: Setup Node 24.x
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 24.x
+          cache: npm
+      - name: Install dependencies
+        run: npm install
+      - name: Rebuild the bundle and push it onto the Dependabot branch
+        env:
+          # A commit pushed with GITHUB_TOKEN does not start workflow runs, so the
+          # rebuilt commit would never be checked. Dependabot-triggered runs
+          # cannot read regular Actions secrets either: this has to be a
+          # Dependabot secret (Settings -> Secrets and variables -> Dependabot).
+          PUSH_TOKEN: ${{ secrets.DEPENDABOT_PUSH_TOKEN }}
+          HEAD_REF: ${{ github.event.pull_request.head.ref }}
+        run: |
+          if [ -z "$PUSH_TOKEN" ]; then
+            echo "::warning::DEPENDABOT_PUSH_TOKEN is not set as a Dependabot secret; the bundle was not rebuilt."
+            exit 0
+          fi
+          if git log -1 --pretty=%B | grep -q '^chore(dist): rebuild'; then
+            echo "The head commit is already a rebuild; nothing to push."
+            exit 0
+          fi
+          npm run build
+          if git diff --quiet -- dist/; then
+            echo "dist/ already matches the manifest; nothing to push."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add dist/
+          git commit -s -m "chore(dist): rebuild the bundle for this dependency bump"
+          git remote set-url origin "https://x-access-token:${PUSH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
+          git push origin "HEAD:${HEAD_REF}"

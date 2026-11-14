@@ -75,6 +75,7 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           ref: ${{ github.event.pull_request.head.ref }}
+          persist-credentials: false
       # Same delete, build and compare as the check-dist job above: the artifact
       # has to be byte-for-byte what that comparison expects.
       - name: remove js files in dist/
@@ -113,9 +114,14 @@ jobs:
     permissions:
       contents: write
     steps:
+      # No persisted GITHUB_TOKEN credential: checkout leaves an auth header in
+      # the git config that would otherwise push the commit with GITHUB_TOKEN
+      # (and then no workflow run would be started for it). The PAT in the push
+      # step has to be the only credential.
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           ref: ${{ github.event.pull_request.head.ref }}
+          persist-credentials: false
       - name: remove js files in dist/
         run: find dist/ -type f \( -name "*.json" -o -name "*.js" -o -name "*.js.map" \) -delete
       - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2

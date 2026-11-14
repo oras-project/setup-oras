@@ -74,7 +74,7 @@ jobs:
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          ref: ${{ github.event.pull_request.head.ref }}
+          ref: ${{ github.event.pull_request.head.sha }}
           persist-credentials: false
       # Same delete, build and compare as the check-dist job above: the artifact
       # has to be byte-for-byte what that comparison expects.
@@ -106,13 +106,18 @@ jobs:
 
   push-dependabot:
     needs: rebuild-dependabot
+    # Keep the guard explicit on the job that holds the token.
+    if: >-
+      github.event_name == 'pull_request' &&
+      github.event.pull_request.user.login == 'dependabot[bot]' &&
+      github.event.pull_request.head.repo.full_name == github.repository
     runs-on: ubuntu-latest
     # Concurrent runs of this PR would race the push and fail non-fast-forward.
     concurrency:
       group: rebuild-dependabot-${{ github.event.pull_request.number }}
       cancel-in-progress: true
     permissions:
-      contents: write
+      contents: read
     steps:
       # No persisted GITHUB_TOKEN credential: checkout leaves an auth header in
       # the git config that would otherwise push the commit with GITHUB_TOKEN
@@ -120,7 +125,7 @@ jobs:
       # step has to be the only credential.
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          ref: ${{ github.event.pull_request.head.ref }}
+          ref: ${{ github.event.pull_request.head.sha }}
           persist-credentials: false
       - name: remove js files in dist/
         run: find dist/ -type f \( -name "*.json" -o -name "*.js" -o -name "*.js.map" \) -delete
@@ -139,15 +144,15 @@ jobs:
           PUSH_TOKEN: ${{ secrets.DEPENDABOT_PUSH_TOKEN }}
           HEAD_REF: ${{ github.event.pull_request.head.ref }}
         run: |
-          if [ -z "$PUSH_TOKEN" ]; then
-            echo "::warning::DEPENDABOT_PUSH_TOKEN is not set as a Dependabot secret; the bundle was not rebuilt."
-            exit 0
-          fi
           # A human commit with this subject must not be mistaken for a rebuild,
           # so check the author of the head commit as well.
           if [ "$(git log -1 --format=%ae)" = "41898282+github-actions[bot]@users.noreply.github.com" ] \
             && git log -1 --pretty=%B | grep -q '^chore(dist): rebuild'; then
             echo "The head commit is already a rebuild; nothing to push."
+            exit 0
+          fi
+          if [ -z "$PUSH_TOKEN" ]; then
+            echo "::warning::DEPENDABOT_PUSH_TOKEN is not set as a Dependabot secret; the bundle was not rebuilt."
             exit 0
           fi
           git add dist/
@@ -159,4 +164,4 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git commit -s -m "chore(dist): rebuild the bundle for this dependency bump"
           git remote set-url origin "https://x-access-token:${PUSH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
-          git push origin "HEAD:${HEAD_REF}"
+          git push origin "HEAD:refs/heads/${HEAD_REF}"

@@ -19,16 +19,25 @@
 //   node .github/scripts/update-releases.mjs 1.3.2 1.3.3  # add specific versions
 //
 // Outputs the list of added versions to stdout, one per line, and writes
-// ADDED_VERSIONS=<comma-list> to $GITHUB_OUTPUT when run in Actions.
+// ADDED_VERSIONS=<comma-list> and DEFAULT_VERSION=<version> to $GITHUB_OUTPUT
+// when run in Actions. DEFAULT_VERSION is empty when the default in action.yml
+// did not change. The default is reconciled on every run, even when no new
+// version is added, so drift from a hand edit or backfill gets fixed too.
 
 import { readFile, writeFile, appendFile } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
 import { dirname, resolve } from 'node:path';
 
+import { compareSemver, pickDefaultVersion } from './lib/default-version.mjs';
+
 const ORAS_REPO = 'oras-project/oras';
 const RELEASES_JSON = resolve(
     dirname(fileURLToPath(import.meta.url)),
     '..', '..', 'src', 'lib', 'data', 'releases.json'
+);
+const ACTION_YML = resolve(
+    dirname(fileURLToPath(import.meta.url)),
+    '..', '..', 'action.yml'
 );
 
 async function ghFetch(url) {
@@ -86,13 +95,24 @@ async function listUpstreamVersions() {
         .map(t => t.replace(/^v/, ''));
 }
 
-function compareSemver(a, b) {
-    const pa = a.split('.').map(Number);
-    const pb = b.split('.').map(Number);
-    for (let i = 0; i < 3; i++) {
-        if (pa[i] !== pb[i]) return pa[i] - pb[i];
+// Matches the `default:` line of the `version` input in action.yml. Anchoring
+// on the input name keeps the `token` input's default untouched, and the
+// tolerant line endings let the script run from a CRLF checkout as well.
+const VERSION_DEFAULT_RE = /(^  version:\r?\n(?:    [^\r\n]*\r?\n)*?    default: )(\S+)/m;
+
+async function updateActionDefaultVersion(releases) {
+    const raw = await readFile(ACTION_YML, 'utf8');
+    const match = raw.match(VERSION_DEFAULT_RE);
+    if (!match) {
+        throw new Error(`Could not find the version input default in ${ACTION_YML}`);
     }
-    return 0;
+    const currentDefault = match[2];
+    const nextDefault = pickDefaultVersion(releases, currentDefault);
+    if (nextDefault === currentDefault) {
+        return { currentDefault, nextDefault: null };
+    }
+    await writeFile(ACTION_YML, raw.replace(VERSION_DEFAULT_RE, `$1${nextDefault}`));
+    return { currentDefault, nextDefault };
 }
 
 async function main() {
@@ -115,14 +135,6 @@ async function main() {
             .filter(v => !(v in releases))
             .filter(v => compareSemver(v, currentMax) > 0);
     }
-    if (missing.length === 0) {
-        console.log('No new versions to add.');
-        if (process.env.GITHUB_OUTPUT) {
-            await appendFile(process.env.GITHUB_OUTPUT, 'ADDED_VERSIONS=\n');
-        }
-        return;
-    }
-
     const added = [];
     for (const version of missing) {
         console.log(`Adding v${version}...`);
@@ -135,12 +147,26 @@ async function main() {
         Object.keys(releases).sort(compareSemver).map(k => [k, releases[k]])
     );
 
-    // Match existing formatting: 4-space indent, trailing newline.
-    await writeFile(RELEASES_JSON, JSON.stringify(sorted, null, 4) + '\n');
+    if (added.length > 0) {
+        // Match existing formatting: 4-space indent, trailing newline.
+        await writeFile(RELEASES_JSON, JSON.stringify(sorted, null, 4) + '\n');
+    }
 
-    console.log(`Added ${added.length} version(s): ${added.join(', ')}`);
+    const { currentDefault, nextDefault } = await updateActionDefaultVersion(sorted);
+    if (nextDefault) {
+        console.log(`Updated action.yml default version: ${currentDefault} -> ${nextDefault}`);
+    } else {
+        console.log(`action.yml default version unchanged (${currentDefault})`);
+    }
+
+    if (added.length > 0) {
+        console.log(`Added ${added.length} version(s): ${added.join(', ')}`);
+    } else {
+        console.log('No new versions to add.');
+    }
     if (process.env.GITHUB_OUTPUT) {
         await appendFile(process.env.GITHUB_OUTPUT, `ADDED_VERSIONS=${added.join(',')}\n`);
+        await appendFile(process.env.GITHUB_OUTPUT, `DEFAULT_VERSION=${nextDefault ?? ''}\n`);
     }
 }
 

@@ -20,7 +20,9 @@
 //
 // Outputs the list of added versions to stdout, one per line, and writes
 // ADDED_VERSIONS=<comma-list> and DEFAULT_VERSION=<version> to $GITHUB_OUTPUT
-// when run in Actions.
+// when run in Actions. DEFAULT_VERSION is empty when the default in action.yml
+// did not change. The default is reconciled on every run, even when no new
+// version is added, so drift from a hand edit or backfill gets fixed too.
 
 import { readFile, writeFile, appendFile } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
@@ -101,9 +103,12 @@ const VERSION_DEFAULT_RE = /(^  version:\r?\n(?:    [^\r\n]*\r?\n)*?    default:
 async function updateActionDefaultVersion(releases) {
     const raw = await readFile(ACTION_YML, 'utf8');
     const match = raw.match(VERSION_DEFAULT_RE);
-    const currentDefault = match?.[2];
+    if (!match) {
+        throw new Error(`Could not find the version input default in ${ACTION_YML}`);
+    }
+    const currentDefault = match[2];
     const nextDefault = pickDefaultVersion(releases, currentDefault);
-    if (!currentDefault || nextDefault === currentDefault) {
+    if (nextDefault === currentDefault) {
         return { currentDefault, nextDefault: null };
     }
     await writeFile(ACTION_YML, raw.replace(VERSION_DEFAULT_RE, `$1${nextDefault}`));
@@ -130,14 +135,6 @@ async function main() {
             .filter(v => !(v in releases))
             .filter(v => compareSemver(v, currentMax) > 0);
     }
-    if (missing.length === 0) {
-        console.log('No new versions to add.');
-        if (process.env.GITHUB_OUTPUT) {
-            await appendFile(process.env.GITHUB_OUTPUT, 'ADDED_VERSIONS=\n');
-        }
-        return;
-    }
-
     const added = [];
     for (const version of missing) {
         console.log(`Adding v${version}...`);
@@ -150,8 +147,10 @@ async function main() {
         Object.keys(releases).sort(compareSemver).map(k => [k, releases[k]])
     );
 
-    // Match existing formatting: 4-space indent, trailing newline.
-    await writeFile(RELEASES_JSON, JSON.stringify(sorted, null, 4) + '\n');
+    if (added.length > 0) {
+        // Match existing formatting: 4-space indent, trailing newline.
+        await writeFile(RELEASES_JSON, JSON.stringify(sorted, null, 4) + '\n');
+    }
 
     const { currentDefault, nextDefault } = await updateActionDefaultVersion(sorted);
     if (nextDefault) {
@@ -160,7 +159,11 @@ async function main() {
         console.log(`action.yml default version unchanged (${currentDefault})`);
     }
 
-    console.log(`Added ${added.length} version(s): ${added.join(', ')}`);
+    if (added.length > 0) {
+        console.log(`Added ${added.length} version(s): ${added.join(', ')}`);
+    } else {
+        console.log('No new versions to add.');
+    }
     if (process.env.GITHUB_OUTPUT) {
         await appendFile(process.env.GITHUB_OUTPUT, `ADDED_VERSIONS=${added.join(',')}\n`);
         await appendFile(process.env.GITHUB_OUTPUT, `DEFAULT_VERSION=${nextDefault ?? ''}\n`);

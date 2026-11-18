@@ -19,16 +19,23 @@
 //   node .github/scripts/update-releases.mjs 1.3.2 1.3.3  # add specific versions
 //
 // Outputs the list of added versions to stdout, one per line, and writes
-// ADDED_VERSIONS=<comma-list> to $GITHUB_OUTPUT when run in Actions.
+// ADDED_VERSIONS=<comma-list> and DEFAULT_VERSION=<version> to $GITHUB_OUTPUT
+// when run in Actions.
 
 import { readFile, writeFile, appendFile } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
 import { dirname, resolve } from 'node:path';
 
+import { compareSemver, pickDefaultVersion } from './lib/default-version.mjs';
+
 const ORAS_REPO = 'oras-project/oras';
 const RELEASES_JSON = resolve(
     dirname(fileURLToPath(import.meta.url)),
     '..', '..', 'src', 'lib', 'data', 'releases.json'
+);
+const ACTION_YML = resolve(
+    dirname(fileURLToPath(import.meta.url)),
+    '..', '..', 'action.yml'
 );
 
 async function ghFetch(url) {
@@ -86,13 +93,21 @@ async function listUpstreamVersions() {
         .map(t => t.replace(/^v/, ''));
 }
 
-function compareSemver(a, b) {
-    const pa = a.split('.').map(Number);
-    const pb = b.split('.').map(Number);
-    for (let i = 0; i < 3; i++) {
-        if (pa[i] !== pb[i]) return pa[i] - pb[i];
+// Matches the `default:` line of the `version` input in action.yml. Anchoring
+// on the input name keeps the `token` input's default untouched, and the
+// tolerant line endings let the script run from a CRLF checkout as well.
+const VERSION_DEFAULT_RE = /(^  version:\r?\n(?:    [^\r\n]*\r?\n)*?    default: )(\S+)/m;
+
+async function updateActionDefaultVersion(releases) {
+    const raw = await readFile(ACTION_YML, 'utf8');
+    const match = raw.match(VERSION_DEFAULT_RE);
+    const currentDefault = match?.[2];
+    const nextDefault = pickDefaultVersion(releases, currentDefault);
+    if (!currentDefault || nextDefault === currentDefault) {
+        return { currentDefault, nextDefault: null };
     }
-    return 0;
+    await writeFile(ACTION_YML, raw.replace(VERSION_DEFAULT_RE, `$1${nextDefault}`));
+    return { currentDefault, nextDefault };
 }
 
 async function main() {
@@ -138,9 +153,17 @@ async function main() {
     // Match existing formatting: 4-space indent, trailing newline.
     await writeFile(RELEASES_JSON, JSON.stringify(sorted, null, 4) + '\n');
 
+    const { currentDefault, nextDefault } = await updateActionDefaultVersion(sorted);
+    if (nextDefault) {
+        console.log(`Updated action.yml default version: ${currentDefault} -> ${nextDefault}`);
+    } else {
+        console.log(`action.yml default version unchanged (${currentDefault})`);
+    }
+
     console.log(`Added ${added.length} version(s): ${added.join(', ')}`);
     if (process.env.GITHUB_OUTPUT) {
         await appendFile(process.env.GITHUB_OUTPUT, `ADDED_VERSIONS=${added.join(',')}\n`);
+        await appendFile(process.env.GITHUB_OUTPUT, `DEFAULT_VERSION=${nextDefault ?? ''}\n`);
     }
 }
 

@@ -34,8 +34,11 @@ force-pushes in `auto-release.yml` and `update-version.yml` from moving it.
 ## Automatic patch releases
 
 The [update workflow](.github/workflows/update-releases.yml) opens a PR with
-new CLI versions and rebuilt `dist/`. Check its checksums against the upstream
-ORAS release and confirm CI passes before merging.
+new CLI versions and rebuilt `dist/`. When the newest stable CLI version moves,
+the same PR also updates `inputs.version.default` in
+[`action.yml`](action.yml), so unpinned `oras-project/setup-oras@v2` users get
+the new CLI. Check its checksums against the upstream ORAS release and confirm
+CI passes before merging.
 
 After both `Tests` and `Check dist/` pass on `main`, the
 [auto-release workflow](.github/workflows/auto-release.yml) compares
